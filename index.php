@@ -1,3 +1,7 @@
+<?php
+session_start(); // เริ่ม session
+?>
+
 <!DOCTYPE html>
 <html lang="th">
 
@@ -17,24 +21,20 @@
         background-color: #fff;
     }
 
-    /* Hero Section */
     .hero {
         position: relative;
         text-align: center;
         color: white;
-        background: url('hero.png') center/cover no-repeat;
+        background: url('bg/main.jpg') center/cover no-repeat;
         height: 90vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
     }
 
     .hero .overlay {
         position: absolute;
         width: 100%;
         height: 100%;
-        /* background: rgba(0, 0, 0, 0.4); */
+        z-index: 0;
+        pointer-events: none;
     }
 
     .hero h1 {
@@ -47,6 +47,19 @@
         z-index: 1;
     }
 
+    .hero-img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+    }
+
+    .logo-img {
+        width: 100px;
+        height: 100px;
+    }
+
     .btn {
         z-index: 1;
         display: inline-block;
@@ -56,7 +69,7 @@
         text-decoration: none;
         font-size: 1.5rem;
         border-radius: 5px;
-        margin-top: 20px;
+        margin-top: 40vh;
     }
 
     /* Gallery Section */
@@ -117,40 +130,23 @@
     }
 
     footer {
-    display: flex;
-    justify-content: space-between; /* ให้ nav และโลโก้ไปอยู่คนละข้าง */
-    align-items: center;
-    background: #414678;
-    color: white;
-    text-align: center;
-    padding: 50px;
-}
-
-nav {
-    display: flex;
-    gap: 15px;
-}
-
-.logo-footer img {
-    width: 100px;  /* ปรับขนาดรูป */
-    height: auto;
-}
-    /* Scroll to Top Button */
-    .scroll-top {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: yellow;
-        border: none;
-        padding: 10px 15px;
-        font-size: 1.5rem;
-        border-radius: 50%;
-        cursor: pointer;
-        display: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #414678;
+        color: white;
+        text-align: center;
+        padding: 10px;
     }
 
-    .scroll-top:hover {
-        background: orange;
+    nav {
+        display: flex;
+        gap: 15px;
+    }
+
+    .logo-footer img {
+        width: 100px;
+        height: auto;
     }
 
     @media (max-width: 768px) {
@@ -177,27 +173,13 @@ nav {
         }
     }
 
-    .hero-img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: -1;
-    }
-
-    .hero {
-        background: url('img/hero.png') center/cover no-repeat;
-    }
-
     .navbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        position: fixed;
         width: 97%;
         top: 0;
         left: 0;
-        /* border-bottom: 1px solid; */
         padding: 10px 20px;
         z-index: 1000;
     }
@@ -223,15 +205,8 @@ nav {
     }
 
     .nav-links a:hover {
-        color: black;
         border-radius: 5px;
     }
-
-    .logo-img {
-        width: 50px;
-        height: 50px;
-    }
-
     </style>
 </head>
 
@@ -239,7 +214,7 @@ nav {
     <header class="hero">
         <!-- Navigation Bar -->
         <nav class="navbar">
-                <img class="logo-img" src="img/logo.png" alt="ผาชมดาว">
+            <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
             <ul class="nav-links">
                 <li><a href="index.php">Home</a></li>
                 <li><a href="service.php">Services</a></li>
@@ -247,12 +222,12 @@ nav {
             </ul>
         </nav>
         <div class="overlay"></div>
-        <img src="hero.png" alt="วิวสวยๆ" class="hero-img">
         <h1></h1>
         <p style="margin-top: 150px"></p>
         <br>
-        <a href="#" class="btn">เข้าสู่ระบบ</a>
-
+        <?php if (!isset($_SESSION['user_id'])): ?>
+            <a href="login.php" class="btn">เข้าสู่ระบบ</a>
+        <?php endif; ?>
     </header>
 
 
@@ -297,29 +272,16 @@ nav {
 
     <!-- Footer -->
     <footer>
-    <div></div>
-        <nav style="
-    font-size: 25px;">
-            <a href="#">Home</a>
-            <a href="#">Services</a>
-            <a href="#">Contact</a>
+        <div></div>
+        <nav style="font-size: 25px;">
+            <a href="index.php">Home</a>
+            <a href="service.php">Services</a>
+            <a href="contact.php">Contact</a>
         </nav>
         <div class="logo-footer">
-            <img src="img/logo.png" alt="โลโก้ผาชมดาว">
+            <img src="bg/logo.png" alt="โลโก้ผาชมดาว">
         </div>
     </footer>
-
-    <!-- Scroll to Top Button -->
-    <button class="scroll-top" onclick="scrollToTop()">↑</button>
-
-    <script>
-    function scrollToTop() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    }
-    </script>
 
 </body>
 

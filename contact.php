@@ -1,3 +1,7 @@
+<?php
+session_start(); // เริ่ม session
+?>
+
 <!DOCTYPE html>
 <html lang="th">
 
@@ -9,16 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
 
-   <style>
-    /* ตั้งค่าพื้นฐาน */
-    body {
-        font-family: 'Prompt', sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #fff;
-    }
-
-    /* Contact Section */
+    <style>
     .contact-section {
         display: flex;
         justify-content: space-around;
@@ -30,15 +25,13 @@
     .contact-info {
         width: 40%;
         color: black;
+        text-align: left;
     }
 
     .contact-info h2 {
         font-size: 2rem;
     }
 
- 
-
-    /* Quote Section */
     .quote {
         text-align: center;
         padding: 40px;
@@ -49,7 +42,6 @@
         font-size: 1.8rem;
     }
 
-    /* Gallery Section */
     .gallery {
         display: flex;
         justify-content: center;
@@ -72,39 +64,6 @@
         text-align: center;
     }
 
-
-
-    footer nav a {
-        color: white;
-        margin: 0 15px;
-        text-decoration: none;
-        font-size: 25px;
-    }
-
-    footer {
-        display: flex;
-        justify-content: space-between;
-        /* ให้ nav และโลโก้ไปอยู่คนละข้าง */
-        align-items: center;
-        background: #414678;
-        color: white;
-        text-align: center;
-        padding: 50px;
-    }
-
-    nav {
-        display: flex;
-        gap: 15px;
-    }
-
-    .logo-footer img {
-        width: 100px;
-        /* ปรับขนาดรูป */
-        height: auto;
-    }
-
-
-    /* Responsive Design */
     @media (max-width: 768px) {
         .contact-section {
             flex-direction: column;
@@ -125,7 +84,6 @@
         }
     }
 
-    /* ตั้งค่าพื้นฐาน */
     body {
         font-family: 'Prompt', sans-serif;
         margin: 0;
@@ -133,24 +91,20 @@
         background-color: #fff;
     }
 
-    /* Hero Section */
     .hero {
         position: relative;
-        text-align: left;
+        text-align: center;
         color: white;
-        background: url('contact.jpg') center/cover no-repeat;
+        background: url('bg/contact.jpg') center/cover no-repeat;
         height: 90vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
     }
 
     .hero .overlay {
         position: absolute;
         width: 100%;
         height: 100%;
-        /* background: rgba(0, 0, 0, 0.4); */
+        z-index: 0;
+        pointer-events: none;
     }
 
     .hero h1 {
@@ -163,6 +117,11 @@
         z-index: 1;
     }
 
+    .logo-img {
+        width: 100px;
+        height: 100px;
+    }
+
     .btn {
         z-index: 1;
         display: inline-block;
@@ -172,7 +131,7 @@
         text-decoration: none;
         font-size: 1.5rem;
         border-radius: 5px;
-        margin-top: 20px;
+        margin-top: 40vh;
     }
 
     /* Gallery Section */
@@ -226,24 +185,30 @@
         font-size: 1.5rem;
     }
 
-
-
-    /* Scroll to Top Button */
-    .scroll-top {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: yellow;
-        border: none;
-        padding: 10px 15px;
-        font-size: 1.5rem;
-        border-radius: 50%;
-        cursor: pointer;
-        display: none;
+    footer nav a {
+        color: white;
+        margin: 0 15px;
+        text-decoration: none;
     }
 
-    .scroll-top:hover {
-        background: orange;
+    footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #414678;
+        color: white;
+        text-align: center;
+        padding: 10px;
+    }
+
+    nav {
+        display: flex;
+        gap: 15px;
+    }
+
+    .logo-footer img {
+        width: 100px;
+        height: auto;
     }
 
     @media (max-width: 768px) {
@@ -270,26 +235,13 @@
         }
     }
 
-    .hero-img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: -1;
-    }
-
-    .hero {
-        background: url('img/contact.jpg') center/cover no-repeat;
-    }
-
     .navbar {
         display: flex;
-        justify-content: flex-end;
-        position: fixed;
+        justify-content: space-between;
+        align-items: center;
         width: 97%;
         top: 0;
         left: 0;
-        border-bottom: 1px solid;
         padding: 10px 20px;
         z-index: 1000;
     }
@@ -315,7 +267,6 @@
     }
 
     .nav-links a:hover {
-        color: black;
         border-radius: 5px;
     }
 
@@ -339,74 +290,57 @@
     }
 
     .contact-form {
-    width: 100%;
-    max-width: 500px; /* จำกัดความกว้าง */
-    background: white;
-    padding: 30px; /* เพิ่ม padding ให้ช่องห่างจากขอบ */
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-.contact-form h2 {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    color: black;
-}
-
-.contact-form input,
-.contact-form textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px; /* เพิ่มระยะห่างระหว่างช่อง */
-    border: 1px solid #ccc;
-    border-radius: 8px; /* ปรับมุมให้ดูโค้ง */
-    font-size: 1rem;
-    box-sizing: border-box; /* ป้องกันขนาดล้น */
-}
-
-.contact-form textarea {
-    height: 120px; /* กำหนดความสูงให้พอดี */
-    resize: vertical; /* อนุญาตให้ปรับขนาดได้เฉพาะแนวตั้ง */
-}
-
-.contact-form button {
-    width: 100%;
-    padding: 12px;
-    background: #ffd936;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: 0.3s;
-}
-
-.contact-form button:hover {
-    background: orange;
-}
-
-
-    .hero {
-        position: relative;
-        text-align: left;
-        color: white;
-        background: url('img/contact.jpg') center/cover no-repeat;
-        height: 90vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .logo-img {
-        width: 100px;
-        height: 100px;
-
-    }
-
-    .logo-text {
-        text-align: center;
         width: 100%;
+        max-width: 500px;
+        /* จำกัดความกว้าง */
+        background: white;
+        padding: 30px;
+        /* เพิ่ม padding ให้ช่องห่างจากขอบ */
+        border-radius: 10px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .contact-form h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: black;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        /* เพิ่มระยะห่างระหว่างช่อง */
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        /* ปรับมุมให้ดูโค้ง */
+        font-size: 1rem;
+        box-sizing: border-box;
+        /* ป้องกันขนาดล้น */
+    }
+
+    .contact-form textarea {
+        height: 120px;
+        /* กำหนดความสูงให้พอดี */
+        resize: vertical;
+        /* อนุญาตให้ปรับขนาดได้เฉพาะแนวตั้ง */
+    }
+
+    .contact-form button {
+        width: 100%;
+        padding: 12px;
+        background: #ffd936;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+
+    .contact-form button:hover {
+        background: orange;
     }
 
     a {
@@ -420,9 +354,9 @@
 </head>
 
 <body>
-
     <header class="hero">
         <nav class="navbar">
+            <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
             <ul class="nav-links">
                 <li><a href="index.php">Home</a></li>
                 <li><a href="service.php">Services</a></li>
@@ -430,16 +364,13 @@
             </ul>
         </nav>
         <div class="overlay"></div>
-        <div class="logo-text">
-            <img src="contact.jpg" alt="วิวสวยๆ" class="hero-img">
-
-        </div>
-
-        <!-- Contact Section Moved Here -->
+        <h1></h1>
+        <p style="margin-top: 150px"></p>
+        <br>
         <section class="contact-section">
 
             <div class="contact-info">
-                <img class="logo-img" src="img/logo.png" alt="ผาชมดาว">
+                <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
 
                 <h2>You can find us at</h2>
                 <p><strong>ที่อยู่:</strong> หมู่บ้านรักไทย ต.ชมพู อ.เนินมะปราง จ.พิษณุโลก</p>
@@ -464,8 +395,6 @@
         </section>
     </header>
 
-
-    <!-- Quote Section -->
     <section class="quote">
         <h2>The world is a book and those who don't travel read only one page.</h2>
     </section>
@@ -474,29 +403,27 @@
     <section class="gallery">
         <img src="img/img1.jpg" alt="วิวภูเขา">
         <img src="img/img2.jpg" alt="วิวตอนเช้า">
-        <img src="img/contact.jpg" alt="พระอาทิตย์ตก">
-        <img src="img/service.jpg" alt="เต็นท์พักแรม">
+        <img src="bg/contact.jpg" alt="พระอาทิตย์ตก">
+        <img src="bg/service.jpg" alt="เต็นท์พักแรม">
     </section>
 
     <!-- Google Map Section -->
     <section class="map">
         <img src="img/loca.jpg" alt="วิวภูเขา">
-
     </section>
 
     <!-- Footer -->
     <footer>
         <div></div>
-        <nav>
-            <a href="#">Home</a>
-            <a href="#">Services</a>
-            <a href="#">Contact</a>
+        <nav style="font-size: 25px;">
+            <a href="index.php">Home</a>
+            <a href="service.php">Services</a>
+            <a href="contact.php">Contact</a>
         </nav>
         <div class="logo-footer">
-            <img src="img/logo.png" alt="โลโก้ผาชมดาว">
+            <img src="bg/logo.png" alt="โลโก้ผาชมดาว">
         </div>
     </footer>
-
 
 </body>
 
