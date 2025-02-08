@@ -7,10 +7,12 @@
     <title>Contact Us | ผาชมดาว</title>
     <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+
+   <style>
     /* ตั้งค่าพื้นฐาน */
     body {
-        font-family: 'Sriracha', sans-serif;
+        font-family: 'Prompt', sans-serif;
         margin: 0;
         padding: 0;
         background-color: #fff;
@@ -125,7 +127,7 @@
 
     /* ตั้งค่าพื้นฐาน */
     body {
-        font-family: 'Sriracha', sans-serif;
+        font-family: 'Prompt', sans-serif;
         margin: 0;
         padding: 0;
         background-color: #fff;

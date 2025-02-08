@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pha Chom Dao Resort</title>
     <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+
     <style>
     /* ตั้งค่าพื้นฐาน */
     body {
-        font-family: 'Sriracha', sans-serif;
+        font-family: 'Prompt', sans-serif;
         margin: 0;
         padding: 0;
         background-color: #fff;
