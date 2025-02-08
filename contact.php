@@ -1,6 +1,33 @@
 <?php
-session_start(); // เริ่ม session
+session_start();
+include 'db.php'; // เรียกใช้ไฟล์เชื่อมต่อฐานข้อมูล
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // รับค่าจากฟอร์ม
+    $name = $conn->real_escape_string($_POST['name']);
+    $email = $conn->real_escape_string($_POST['email']);
+    $message = $conn->real_escape_string($_POST['message']);
+
+    // ตรวจสอบว่าข้อมูลไม่ว่าง
+    if (!empty($name) && !empty($email) && !empty($message)) {
+        // คำสั่ง SQL สำหรับบันทึกข้อมูล
+        $sql = "INSERT INTO contact_messages (name, email, message) VALUES ('$name', '$email', '$message')";
+
+        if ($conn->query($sql) === TRUE) {
+            $_SESSION['success'] = "Your message has been sent successfully!";
+        } else {
+            $_SESSION['error'] = "Error: " . $conn->error;
+        }
+    } else {
+        $_SESSION['error'] = "All fields are required!";
+    }
+
+    // Redirect กลับไปที่หน้า contact.php
+    header("Location: contact.php");
+    exit();
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="th">
@@ -367,6 +394,17 @@ session_start(); // เริ่ม session
         <h1></h1>
         <p style="margin-top: 150px"></p>
         <br>
+        <?php
+if (isset($_SESSION['success'])) {
+    echo "<div style='color: green; text-align: center; font-size: 1.2rem;'>" . $_SESSION['success'] . "</div>";
+    unset($_SESSION['success']); // ลบข้อความหลังแสดงผล
+}
+if (isset($_SESSION['error'])) {
+    echo "<div style='color: red; text-align: center; font-size: 1.2rem;'>" . $_SESSION['error'] . "</div>";
+    unset($_SESSION['error']); // ลบข้อความหลังแสดงผล
+}
+?>
+
         <section class="contact-section">
 
             <div class="contact-info">

@@ -246,19 +246,19 @@ session_start(); // เริ่ม session
 
     <!-- Review Section -->
     <section class="review">
-        <div class="review-item"><img src="img/review1.jpg" alt="วิวทะเลหมอก">
+        <div class="review-item"><img src="review/review1.jpg" alt="วิวทะเลหมอก">
         </div>
-        <div class="review-item"><img src="img/review2.jpg" alt="วิวต้นไม้ตอนเช้า">
+        <div class="review-item"><img src="review/review2.jpg" alt="วิวต้นไม้ตอนเช้า">
         </div>
-        <div class="review-item"><img src="img/review3.jpg" alt="พระอาทิตย์ตก">
+        <div class="review-item"><img src="review/review3.jpg" alt="พระอาทิตย์ตก">
         </div>
     </section>
     <section class="review">
-        <div class="review-item"><img src="img/review4.jpg" alt="วิวทะเลหมอก">
+        <div class="review-item"><img src="review/review4.jpg" alt="วิวทะเลหมอก">
         </div>
-        <div class="review-item"><img src="img/review5.jpg" alt="วิวต้นไม้ตอนเช้า">
+        <div class="review-item"><img src="review/review5.jpg" alt="วิวต้นไม้ตอนเช้า">
         </div>
-        <div class="review-item"><img src="img/review6.jpg" alt="พระอาทิตย์ตก">
+        <div class="review-item"><img src="review/review6.jpg" alt="พระอาทิตย์ตก">
         </div>
     </section>
 

@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("ssssssss", $first_name, $last_name, $phone, $email, $id_card, $birthdate, $password, $userrole);
         
         if ($stmt->execute()) {
-            echo "<script>alert('สมัครสมาชิกสำเร็จ!'); window.history.back();</script>";
+            echo "<script>alert('สมัครสมาชิกสำเร็จ!'); window.location.href='login.php';</script>";
         } else {
             echo "<script>alert('เกิดข้อผิดพลาด: " . $stmt->error . "');</script>";
         }

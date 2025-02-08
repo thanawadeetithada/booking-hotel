@@ -1,18 +1,16 @@
 <?php
-session_start();
-require 'db.php';
+include 'db.php';
 
-$sql = "SELECT user_id, first_name, last_name, phone, email, id_card, birthdate, userrole FROM users";
+$sql = "SELECT * FROM contact_messages ORDER BY created_at DESC";
 $result = $conn->query($sql);
 ?>
-
 <!DOCTYPE html>
 <html lang="th">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ข้อมูลลูกค้า</title>
+    <title>Let's get in touch</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -28,9 +26,6 @@ $result = $conn->query($sql);
     }
 
     .card {
-        /* display: flex;
-            justify-content: center;
-            align-items: center; */
         padding: 30px;
         border-radius: 15px;
         box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
@@ -78,31 +73,6 @@ $result = $conn->query($sql);
     .form-control modal-text {
         height: fit-content;
         width: 50%;
-    }
-
-    .table th:nth-child(4),
-    .table td:nth-child(4) {
-        width: 17%;
-    }
-
-    .table th:nth-child(5),
-    .table td:nth-child(5) {
-        width: 15%;
-    }
-
-    .table th:nth-child(6),
-    .table td:nth-child(6) {
-        width: 15%;
-    }
-
-    .table th:nth-child(7),
-    .table td:nth-child(7) {
-        width: 13%;
-    }
-
-    .table td:nth-child(9) {
-        text-align: center;
-        vertical-align: middle;
     }
 
     .btn-action {
@@ -162,15 +132,9 @@ $result = $conn->query($sql);
 
     <div class="card">
         <div class="header-card">
-            <h3 class="text-left">ข้อมูลลูกค้า</h3>
+            <h3 class="text-left">ข้อมูลการจอง</h3>
             <div class="search-add">
                 <div class="tab-func">
-                    <button type="button" class="btn btn-primary" onclick="window.location.href='add_user.php'">
-                        <i class="fa-solid fa-file-medical"></i> เพิ่มข้อมูลลูกค้า
-                    </button>
-                </div>
-                <div class="tab-func">
-                    <input type="text" class="form-control search-name" placeholder="ค้นหาด้วยชื่อ">
                 </div>
             </div>
         </div>
@@ -180,64 +144,47 @@ $result = $conn->query($sql);
                 <thead>
                     <tr>
                         <th>ชื่อ</th>
-                        <th>นามสกุล</th>
-                        <th>เบอร์โทร</th>
                         <th>Email</th>
-                        <th>เลขบัตรประชาชน</th>
-                        <th>วัน / เดือน / ปี เกิด</th>
-                        <th>สถานะ</th>
+                        <th>ข้อความ</th>
+                        <th>วันที่ เวลา</th>
                         <th>จัดการ</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<tr>
-                                <td>{$row['first_name']}</td>
-                                <td>{$row['last_name']}</td>
-                                <td>{$row['phone']}</td>
-                                <td>{$row['email']}</td>
-                                <td>{$row['id_card']}</td>
-                                <td>{$row['birthdate']}</td>
-                                <td>{$row['userrole']}</td>
-                                <td class='btn-action1'>
-                                    <a href='edit_user.php?user_id={$row['user_id']}' class='btn btn-warning btn-sm'>
-                                        <i class='fa-solid fa-pencil'></i>
-                                    </a>
-                                    &nbsp;&nbsp;
-                                    <a href='#' class='btn btn-danger btn-sm delete-btn' data-id='{$row['user_id']}'>
-                                        <i class='fa-regular fa-trash-can'></i>
-                                    </a>
-                                </td>
-                            </tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='7' class='text-center'>ไม่มีข้อมูล</td></tr>";
-                    }
-                    $conn->close();
-                    ?>
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr id='row_" . $row['id'] . "'>";
+            echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['email']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['message']) . "</td>";
+            echo "<td>" . $row['created_at'] . "</td>";
+            echo "<td>
+                <button class='btn btn-danger delete-btn' data-id='" . $row['id'] . "'>
+                    <i class='fas fa-trash'></i>
+                </button>
+            </td>";
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='5' class='text-center'>ไม่มีข้อมูลการจอง</td></tr>";
+    }
+    ?>
                 </tbody>
+
             </table>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
     $(document).ready(function() {
-        $(".search-name").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("table tbody tr").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-            });
-        });
-
         $(".delete-btn").on("click", function(e) {
             e.preventDefault();
             var id = $(this).data("id");
             var row = $(this).closest("tr");
 
             if (confirm("คุณต้องการลบใช่หรือไม่?")) {
-                $.post("delete_user.php", {
+                $.post("delete_message.php", {
                     id: id
                 }, function(response) {
                     if (response === "success") {

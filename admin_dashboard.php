@@ -36,32 +36,33 @@
     </style>
 </head>
 <body>
+
     <div class="container mt-5">
         <h2 class="text-center mb-4">ผู้ดูแลระบบ</h2>
         <div class="row">
             <div class="col-md-6 mb-3">
-                <a href="#" class="text-decoration-none">
+                <a href="add_room.php" class="text-decoration-none">
                     <div class="card text-center p-4 text-white">
                         <h4>ข้อมูลกำหนดราคาห้องพัก</h4>
                     </div>
                 </a>
             </div>
             <div class="col-md-6 mb-3">
-                <a href="#" class="text-decoration-none">
+                <a href="room_dashboard.php" class="text-decoration-none">
                     <div class="card text-center p-4  text-white">
                         <h4>ข้อมูลห้องพัก</h4>
                     </div>
                 </a>
             </div>
             <div class="col-md-6 mb-3">
-                <a href="#" class="text-decoration-none">
+                <a href="user_management.php" class="text-decoration-none">
                     <div class="card text-center p-4 text-white">
                         <h4>ข้อมูลลูกค้า</h4>
                     </div>
                 </a>
             </div>
             <div class="col-md-6 mb-3">
-                <a href="#" class="text-decoration-none">
+                <a href="booking_room.php" class="text-decoration-none">
                     <div class="card text-center p-4 text-white">
                         <h4>ข้อมูลการจองห้องพัก</h4>
                     </div>

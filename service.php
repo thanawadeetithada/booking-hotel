@@ -199,7 +199,7 @@
         overflow: hidden;
         width: 60%;
         /* เพิ่มความกว้างของกล่องค้นหา */
-        max-width: 800px;
+        max-width: 900px;
         /* จำกัดความกว้างสูงสุด */
     }
 
@@ -214,6 +214,14 @@
         /* ให้กินพื้นที่เต็ม */
     }
 
+    input {
+        text-align: center;
+    }
+
+    .search-box input i {
+        font-weight: bold;
+    }
+
     .search-box select {
         cursor: pointer;
     }
@@ -226,18 +234,18 @@
         cursor: pointer;
         font-size: 1.2rem;
         border-radius: 5px;
+        margin: 10px;
     }
 
     .search-box button:hover {
         background: #0053A6;
     }
-
+/* 
     .icon {
         padding: 12px;
         font-size: 1.5rem;
-        /* ขยายขนาดไอคอน */
         color: #333;
-    }
+    } */
 
     .hotel-listing {
         display: flex;
@@ -340,6 +348,17 @@
         cursor: pointer;
         margin-top: 10px;
     }
+
+    select option {
+        font-size: 1rem;
+    }
+
+    .booking-button, .booking-tent-button {
+    background: gray;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
     </style>
 </head>
 
@@ -359,20 +378,24 @@
 
 
     <div class="search-container">
-        <div class="search-box">
-            <span class="icon"><i class="fas fa-calendar"></i></span>
-            <input type="text" placeholder="วันเช็คอิน — วันเช็คเอาท์">
+    <div class="search-box">
+        <!-- <span class="icon"><i class="fas fa-calendar"></i></span> -->
+        <input type="date" id="checkin" placeholder="Check-in Date" onchange="updateCheckoutMinDate()">
+        
+        <!-- <span class="icon"><i class="fas fa-calendar"></i></span> -->
+        <input type="date" id="checkout" placeholder="Check-out Date">
 
-            <span class="icon"><i class="fas fa-user"></i></span>
-            <select>
-                <option>ผู้ใหญ่ 2 - เด็ก 0 - 1 ห้อง</option>
-                <option>ผู้ใหญ่ 1 - เด็ก 0 - 1 ห้อง</option>
-                <option>ผู้ใหญ่ 2 - เด็ก 1 - 1 ห้อง</option>
-            </select>
+        <!-- <span class="icon"><i class="fas fa-user"></i></span> -->
+        <select>
+            <option>ผู้ใหญ่ 2 - เด็ก 0 - 1 ห้อง</option>
+            <option>ผู้ใหญ่ 1 - เด็ก 0 - 1 ห้อง</option>
+            <option>ผู้ใหญ่ 2 - เด็ก 1 - 1 ห้อง</option>
+        </select>
 
-            <button>ค้นหา</button>
-        </div>
+        <button>ค้นหา</button>
     </div>
+</div>
+
 
     <!-- Hotel Listing -->
     <section class="hotel-listing">
@@ -384,7 +407,7 @@
                     <p>บ้านพัก 1 ห้องนอน 1 ห้องน้ำ</p>
                     <h4>ราคา 1,200 บาท/คืน</h4>
                 </div>
-                <button class="booking-button">จองที่พัก1</button>
+                <button class="booking-button">จองที่พัก</button>
             </div>
         </div>
     </section>
@@ -471,6 +494,73 @@
         </div>
     </footer>
 
+    <script>
+   document.addEventListener("DOMContentLoaded", function () {
+    let checkinInput = document.getElementById("checkin");
+    let checkoutInput = document.getElementById("checkout");
+    let searchButton = document.querySelector(".search-box button");
+
+    // ปิดใช้งานปุ่มค้นหาเริ่มต้น
+    searchButton.disabled = true;
+    searchButton.style.background = "gray";
+    searchButton.style.cursor = "not-allowed";
+    searchButton.style.opacity = "0.5";
+
+    // ตรวจสอบว่าผู้ใช้กรอกข้อมูลครบหรือไม่
+    function checkInputFields() {
+        if (checkinInput.value && checkoutInput.value) {
+            searchButton.disabled = false;
+            searchButton.style.background = "#0073E6"; // เปลี่ยนเป็นสีปกติ
+            searchButton.style.cursor = "pointer";
+            searchButton.style.opacity = "1";
+        } else {
+            searchButton.disabled = true;
+            searchButton.style.background = "gray";
+            searchButton.style.cursor = "not-allowed";
+            searchButton.style.opacity = "0.5";
+        }
+    }
+
+    // เพิ่ม event listener เมื่อผู้ใช้เปลี่ยนค่าใน input
+    checkinInput.addEventListener("input", checkInputFields);
+    checkoutInput.addEventListener("input", checkInputFields);
+
+    // ฟังก์ชันอัปเดต min date ของ checkout
+    checkinInput.addEventListener("change", function () {
+        checkoutInput.min = checkinInput.value;
+    });
+
+    // ปิดใช้งานปุ่มจองที่พักตั้งแต่แรก
+    document.querySelectorAll('.booking-button, .booking-tent-button').forEach(button => {
+        button.disabled = true;
+        button.style.background = "gray";
+        button.style.cursor = "not-allowed";
+        button.style.opacity = "0.5";
+    });
+
+    // ฟังก์ชันเปิดใช้งานปุ่มจอง
+    function enableBookingButtons() {
+        document.querySelectorAll('.booking-button, .booking-tent-button').forEach(button => {
+            button.disabled = false;
+            button.style.background = "#0073E6"; // เปลี่ยนเป็นสีปกติ
+            button.style.cursor = "pointer";
+            button.style.opacity = "1";
+        });
+    }
+
+    // ผูกฟังก์ชันกับปุ่ม "ค้นหา"
+    searchButton.addEventListener("click", enableBookingButtons);
+
+    let bookingButtons = document.querySelectorAll(".booking-button, .booking-tent-button");
+
+bookingButtons.forEach(button => {
+    button.addEventListener("click", function () {
+        window.location.href = "payment.php"; // เมื่อคลิกจะเปลี่ยนหน้าไปยัง payment.php
+    });
+});
+});
+
+</script>
 </body>
 
 </html>
