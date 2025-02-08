@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($stmt->execute()) {
-        echo "<script>alert('อัปเดตข้อมูลสำเร็จ!'); window.location.href = 'room_dashboard.php';</script>";
+        echo "<script>alert('อัปเดตข้อมูลสำเร็จ!'); window.location.href = 'dashboard_room.php';</script>";
     } else {
         echo "<script>alert('เกิดข้อผิดพลาด: " . $conn->error . "');</script>";
     }

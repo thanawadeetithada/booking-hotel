@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("iissss", $user_id, $room_id, $checkin_date, $checkout_date, $payment_method, $payment_slip);
     
     if ($stmt->execute()) {
-        echo "<script>alert('✅ บันทึกข้อมูลการจองสำเร็จ!'); window.location.href='booking_room.php';</script>";
+        echo "<script>alert('✅ บันทึกข้อมูลการจองสำเร็จ!'); window.location.href='dashboard_booking.php';</script>";
     } else {
         echo "❌ เกิดข้อผิดพลาด: " . $stmt->error;
     }

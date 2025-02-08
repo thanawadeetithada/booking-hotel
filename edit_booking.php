@@ -27,11 +27,11 @@ if (isset($_GET['booking_id'])) {
     $booking = $result->fetch_assoc();
 
     if (!$booking) {
-        echo "<script>alert('ไม่พบข้อมูลการจอง'); window.location.href = 'room_dashboard.php';</script>";
+        echo "<script>alert('ไม่พบข้อมูลการจอง'); window.location.href = 'dashboard_room.php';</script>";
         exit();
     }
 } else {
-    echo "<script>alert('ไม่มีรหัสการจองที่ต้องการแก้ไข'); window.location.href = 'room_dashboard.php';</script>";
+    echo "<script>alert('ไม่มีรหัสการจองที่ต้องการแก้ไข'); window.location.href = 'dashboard_room.php';</script>";
     exit();
 }
 

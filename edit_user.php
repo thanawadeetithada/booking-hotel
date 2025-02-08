@@ -144,7 +144,7 @@ $row = $result->fetch_assoc();
             <div class="button-group">
                 <button type="submit" class="submit-btn">บันทึก</button>
                 <button type="button" class="cancel-btn"
-                    onclick="window.location.href='user_management.php'">ยกเลิก</button>
+                    onclick="window.location.href='dashboard_user.php'">ยกเลิก</button>
             </div>
         </form>
     </div>

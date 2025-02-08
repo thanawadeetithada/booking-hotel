@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sssssssi", $first_name, $last_name, $phone, $email, $id_card, $birthdate, $userrole, $user_id);
 
     if ($stmt->execute()) {
-        echo "<script>alert('อัปเดตข้อมูลเรียบร้อยแล้ว'); window.location.href='user_management.php';</script>";
+        echo "<script>alert('อัปเดตข้อมูลเรียบร้อยแล้ว'); window.location.href='dashboard_user.php';</script>";
     } else {
         echo "<script>alert('เกิดข้อผิดพลาด'); window.history.back();</script>";
     }

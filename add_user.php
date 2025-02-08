@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("ssssssss", $first_name, $last_name, $phone, $email, $id_card, $birthdate, $hashed_password, $userrole);
 
         if ($stmt->execute()) {
-            echo "<script>alert('เพิ่มข้อมูลลูกค้าสำเร็จ!'); window.location.href='user_management.php';</script>";
+            echo "<script>alert('เพิ่มข้อมูลลูกค้าสำเร็จ!'); window.location.href='dashboard_user.php';</script>";
         } else {
             echo "<script>alert('เกิดข้อผิดพลาด: " . $stmt->error . "'); history.back();</script>";
         }
@@ -203,7 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <br>
             <div class="button-group">
                 <button type="submit" class="submit-btn">บันทึก</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='user_management.php'">ยกเลิก</button>
+                <button type="button" class="cancel-btn" onclick="window.location.href='dashboard_user.php'">ยกเลิก</button>
             </div>
         </form>
     </div>

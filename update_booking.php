@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     
     if ($stmt->execute()) {
-        echo "<script>alert('อัปเดตข้อมูลสำเร็จ'); window.location.href = 'booking_room.php';</script>";
+        echo "<script>alert('อัปเดตข้อมูลสำเร็จ'); window.location.href = 'dashboard_booking.php';</script>";
     } else {
         echo "<script>alert('เกิดข้อผิดพลาดในการอัปเดต'); window.history.back();</script>";
     }

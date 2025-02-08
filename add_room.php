@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->execute()) {
             echo "<script>
                     alert('✅ บันทึกข้อมูลสำเร็จ!');
-                    window.location.href = 'room_dashboard.php';
+                    window.location.href = 'dashboard_room.php';
                   </script>";
         } else {
             throw new Exception("เกิดข้อผิดพลาดในการบันทึกข้อมูล: " . $stmt->error);

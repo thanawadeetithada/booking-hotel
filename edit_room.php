@@ -15,7 +15,7 @@ if (isset($_GET['room_code'])) {
     $room = $result->fetch_assoc();
 
     if (!$room) {
-        echo "<script>alert('ไม่พบข้อมูลห้องพัก'); window.location.href = 'room_dashboard.php';</script>";
+        echo "<script>alert('ไม่พบข้อมูลห้องพัก'); window.location.href = 'dashboard_room.php';</script>";
         exit();
     }
 } else {
@@ -192,7 +192,7 @@ if (isset($_GET['room_code'])) {
             <div class="button-group">
                 <button type="submit" class="submit-btn">บันทึกข้อมูล</button>
                 <button type="button" class="cancel-btn"
-                    onclick="window.location.href='room_dashboard.php'">ยกเลิก</button>
+                    onclick="window.location.href='dashboard_room.php'">ยกเลิก</button>
             </div>
         </form>
     </div>

@@ -48,21 +48,21 @@
                 </a>
             </div>
             <div class="col-md-6 mb-3">
-                <a href="room_dashboard.php" class="text-decoration-none">
+                <a href="dashboard_room.php" class="text-decoration-none">
                     <div class="card text-center p-4  text-white">
                         <h4>ข้อมูลห้องพัก</h4>
                     </div>
                 </a>
             </div>
             <div class="col-md-6 mb-3">
-                <a href="user_management.php" class="text-decoration-none">
+                <a href="dashboard_user.php" class="text-decoration-none">
                     <div class="card text-center p-4 text-white">
                         <h4>ข้อมูลลูกค้า</h4>
                     </div>
                 </a>
             </div>
             <div class="col-md-6 mb-3">
-                <a href="booking_room.php" class="text-decoration-none">
+                <a href="dashboard_booking.php" class="text-decoration-none">
                     <div class="card text-center p-4 text-white">
                         <h4>ข้อมูลการจองห้องพัก</h4>
                     </div>
