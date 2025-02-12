@@ -49,35 +49,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    if ($payment_method === "เงินสด") {
+        $payment_slip = "";
+    }
+    $status_payment = ($payment_method === "เงินสด") ? "pending" : "paid";
+
     // อัปเดตข้อมูลการจองในฐานข้อมูล
-    $sql = "UPDATE bookings 
-            SET checkin_date = ?, checkout_date = ?, room_id = ?, payment_method = ?";
-
     if (!empty($payment_slip)) {
-        $sql .= ", payment_slip = ?";
-    }
-    
-    $sql .= " WHERE booking_id = ?";
-
-    $stmt = $conn->prepare($sql);
-    
-    if (!empty($payment_slip)) {
-        $stmt->bind_param("ssissi", $checkin_date, $checkout_date, $room_id, $payment_method, $payment_slip, $booking_id);
+        $sql = "UPDATE bookings 
+                SET checkin_date = ?, checkout_date = ?, room_id = ?, payment_method = ?, status_payment = ?, payment_slip = ?
+                WHERE booking_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssisssi", $checkin_date, $checkout_date, $room_id, $payment_method, $status_payment, $payment_slip, $booking_id);
     } else {
-        $stmt->bind_param("ssisi", $checkin_date, $checkout_date, $room_id, $payment_method, $booking_id);
+        $sql = "UPDATE bookings 
+                SET checkin_date = ?, checkout_date = ?, room_id = ?, payment_method = ?, status_payment = ?, payment_slip = NULL
+                WHERE booking_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssissi", $checkin_date, $checkout_date, $room_id, $payment_method, $status_payment, $booking_id);
     }
-    
+
     if ($stmt->execute()) {
         echo "<script>alert('อัปเดตข้อมูลสำเร็จ'); window.location.href = 'dashboard_booking.php';</script>";
     } else {
         echo "<script>alert('เกิดข้อผิดพลาดในการอัปเดต'); window.history.back();</script>";
     }
-    
+
     $stmt->close();
     $conn->close();
-} else {
-    echo "<script>alert('คำขอไม่ถูกต้อง'); window.location.href = 'edit_booking.php';</script>";
-    exit();
 }
-
 ?>

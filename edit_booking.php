@@ -1,52 +1,96 @@
 <?php
-session_start();
-require 'db.php';
+include 'db.php'; // เชื่อมต่อฐานข้อมูล
 
-// ตรวจสอบว่ามีการส่ง booking_id มาหรือไม่
-if (isset($_GET['booking_id'])) {
-    $booking_id = $_GET['booking_id'];
-
-    // ดึงข้อมูลการจองร่วมกับข้อมูลผู้ใช้และห้องพัก
-    $sql = "SELECT 
-                b.*, 
-                u.first_name, 
-                u.last_name, 
-                r.room_number, 
-                r.type, 
-                r.price, 
-                r.description 
-            FROM bookings b
-            JOIN users u ON b.user_id = u.user_id
-            JOIN rooms r ON b.room_id = r.room_id
-            WHERE b.booking_id = ?";
-    
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $booking_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $booking = $result->fetch_assoc();
-
-    if (!$booking) {
-        echo "<script>alert('ไม่พบข้อมูลการจอง'); window.location.href = 'dashboard_room.php';</script>";
-        exit();
-    }
-} else {
-    echo "<script>alert('ไม่มีรหัสการจองที่ต้องการแก้ไข'); window.location.href = 'dashboard_room.php';</script>";
-    exit();
+// ตรวจสอบว่ามี invoice_id ที่ส่งมาหรือไม่
+if (!isset($_GET['invoice_id']) || empty($_GET['invoice_id'])) {
+    die("ไม่พบข้อมูลการจองที่ต้องการแก้ไข");
 }
 
-// ตรวจสอบค่าจากฐานข้อมูลก่อนนำไปใช้ในฟอร์ม
-$first_name = $booking['first_name'];
-$last_name = $booking['last_name'];
-$checkin_date = $booking['checkin_date'];
-$checkout_date = $booking['checkout_date'];
-$room_number = $booking['room_number'];
-$type = $booking['type'];
-$price = $booking['price'];
-$description = $booking['description'];
-$payment_method = $booking['payment_method'];
-$payment_slip = $booking['payment_slip'];
+$invoice_id = intval($_GET['invoice_id']);
 
+// ดึงข้อมูลการจองจากฐานข้อมูล
+$sql = "SELECT * FROM invoice WHERE invoice_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $invoice_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    die("ไม่พบข้อมูลการจอง");
+}
+
+$booking = $result->fetch_assoc();
+
+// เมื่อกดบันทึกการแก้ไข
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $first_name = $_POST['first_name'];
+    $last_name = $_POST['last_name'];
+    $checkin_date = $_POST['checkin_date'];
+    $checkout_date = $_POST['checkout_date'];
+    $room_number = $_POST['room_number'];
+    $room_type = $_POST['room_type'];
+    $guest_count = $_POST['guest_count'];
+    $room_count = $_POST['room_count'];
+    $price = $_POST['price'];
+    $description = $_POST['description'];
+    $payment_method = $_POST['payment_method'];
+    $status_payment = ($payment_method == "โอนเงิน") ? 'paid' : 'pending';
+
+    // คำนวณจำนวนคืน
+    $checkin = new DateTime($checkin_date);
+    $checkout = new DateTime($checkout_date);
+    $interval = $checkin->diff($checkout);
+    $nights = $interval->days;
+
+    if ($nights <= 0) {
+        die("วันที่เช็คเอาท์ต้องมากกว่าวันที่เช็คอิน");
+    }
+
+    if ($room_type == "เต็นท์") {
+        $total_amount = $price * $guest_count * $room_count * $nights;
+    } else {
+        $total_amount = $price * $room_count * $nights;
+    }
+
+    $paid_amount = ($status_payment == 'paid') ? $total_amount : 0;
+
+    // อัปโหลดไฟล์สลิปใหม่ (ถ้ามี)
+    $payment_slip = $booking['payment_slip']; // ค่าเริ่มต้นเป็นค่าที่มีอยู่แล้ว
+    if ($payment_method == "โอนเงิน" && isset($_FILES["imgpayment"]["name"]) && $_FILES["imgpayment"]["size"] > 0) {
+        $target_dir = "uploads/";
+        $file_ext = pathinfo($_FILES["imgpayment"]["name"], PATHINFO_EXTENSION);
+        $payment_slip = $target_dir . "INV-" . $invoice_id . "." . $file_ext;
+
+        if (!move_uploaded_file($_FILES["imgpayment"]["tmp_name"], $payment_slip)) {
+            die("เกิดข้อผิดพลาดในการอัปโหลดไฟล์สลิป");
+        }
+    }
+
+    // อัปเดตข้อมูลในฐานข้อมูล
+    $sql_update = "UPDATE invoice SET 
+        first_name = ?, last_name = ?, checkin_date = ?, checkout_date = ?, room_number = ?, 
+        room_type = ?, guest_count = ?, room_count = ?, price = ?, description = ?, 
+        payment_method = ?, status_payment = ?, payment_slip = ?, total_amount = ?, paid_amount = ? 
+        WHERE invoice_id = ?";
+
+    $stmt_update = $conn->prepare($sql_update);
+    $stmt_update->bind_param("ssssssiiidsssddi",
+        $first_name, $last_name, $checkin_date, $checkout_date, $room_number,
+        $room_type, $guest_count, $room_count, $price, $description,
+        $payment_method, $status_payment, $payment_slip, $total_amount, $paid_amount, $invoice_id
+    );
+
+    if ($stmt_update->execute()) {
+        echo "<script>alert('อัปเดตข้อมูลการจองสำเร็จ!'); window.location.href='dashboard_booking.php';</script>";
+    } else {
+        echo "เกิดข้อผิดพลาด: " . $stmt_update->error;
+    }
+
+    $stmt_update->close();
+}
+
+$stmt->close();
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -55,16 +99,30 @@ $payment_slip = $booking['payment_slip'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แก้ไขข้อมูลการจองห้องพัก</title>
+    <title>แก้ไขข้อมูลการจอง</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <style>
     body {
         font-family: 'Arial', sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
         height: 100vh;
         background: url('bg/sky.png') no-repeat center center/cover;
         margin: 0;
+    }
+
+    .nav-item a {
+        color: white;
+        margin-right: 1rem;
+    }
+
+    .navbar {
+        padding: 20px;
+    }
+
+    .nav-link:hover {
+        color: white;
     }
 
     .container {
@@ -73,13 +131,14 @@ $payment_slip = $booking['payment_slip'];
         border-radius: 15px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         width: 100%;
-        max-width: 400px;
+        max-width: 700px;
     }
 
     h2 {
         margin-bottom: 20px;
         color: black;
         text-align: center;
+        margin-top: 20px;
     }
 
     form {
@@ -94,14 +153,6 @@ $payment_slip = $booking['payment_slip'];
         margin-top: 10px;
     }
 
-    input, select {
-        width: calc(100% - 30px);
-        padding: 12px;
-        margin: 5px 0;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 16px;
-    }
 
     button {
         width: 48%;
@@ -123,61 +174,250 @@ $payment_slip = $booking['payment_slip'];
         color: black;
         margin-left: 10px;
     }
+
+    .form-control {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    .form-label {
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
+
+    .container-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 56px);
+    }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h2>แก้ไขข้อมูลการจองห้องพัก</h2>
-        <form action="update_booking.php" method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="booking_id" value="<?= $booking_id ?>">
-
-            <label for="first_name">ชื่อผู้จอง</label>
-            <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($first_name) ?>" required>
-
-            <label for="last_name">นามสกุลผู้จอง</label>
-            <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($last_name) ?>" required>
-
-            <label for="checkin_date">วันที่เช็คอิน</label>
-            <input type="date" id="checkin_date" name="checkin_date" value="<?= $checkin_date ?>" required>
-
-            <label for="checkout_date">วันที่เช็คเอาท์</label>
-            <input type="date" id="checkout_date" name="checkout_date" value="<?= $checkout_date ?>" required>
-
-            <label for="room_number">เลขห้อง</label>
-            <input type="text" id="room_number" name="room_number" value="<?= htmlspecialchars($room_number) ?>" required>
-
-            <label for="type">ประเภท</label>
-            <select id="type" name="type" required>
-                <option value="ห้องพัก" <?= ($type == 'ห้องพัก') ? 'selected' : '' ?>>ห้องพัก</option>
-                <option value="เต็นท์" <?= ($type == 'เต็นท์') ? 'selected' : '' ?>>เต็นท์</option>
-            </select>
-
-            <label for="price">ราคา</label>
-            <input type="number" id="price" name="price" value="<?= $price ?>" step="0.01" required>
-
-            <label for="description">รายละเอียด</label>
-            <input type="text" id="description" name="description" value="<?= htmlspecialchars($description) ?>">
-
-            <label for="payment_method">รูปแบบการชำระเงิน</label>
-            <select id="payment_method" name="payment_method" required>
-                <option value="โอนเงิน" <?= ($payment_method == 'โอนเงิน') ? 'selected' : '' ?>>โอนเงิน</option>
-                <option value="เงินสด" <?= ($payment_method == 'เงินสด') ? 'selected' : '' ?>>เงินสด</option>
-            </select>
-
-            <label for="imgpayment">แนบสลิปการโอนเงิน</label>
-            <input type="file" id="imgpayment" name="imgpayment">
-            <?php if (!empty($payment_slip)): ?>
-                <p>สลิปปัจจุบัน: <a href="<?= htmlspecialchars($payment_slip) ?>" target="_blank">ดูสลิป</a></p>
-            <?php endif; ?>
-
-            <br>
-            <div class="button-group">
-                <button type="submit" class="submit-btn">อัปเดตข้อมูล</button>
-                <button type="button" class="cancel-btn" onclick="window.history.back();">ยกเลิก</button>
+    <nav class="navbar navbar-dark bg-dark px-3">
+        <div class="d-flex w-100 justify-content-between align-items-center">
+            <i class="fa-solid fa-bars text-white" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
+                style="cursor: pointer;"></i>
+            <div class="nav-item">
+                <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
             </div>
-        </form>
+        </div>
+    </nav>
+    <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarMenu">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">รายการ</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="list-unstyled">
+                <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-regular fa-money-bill-1"></i> ข้อมูลกำหนดราคาห้องพัก</a></li>
+                <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-bed"></i> ข้อมูลห้องพัก</a></li>
+                <li><a href="dashboard_user.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-user"></i> ข้อมูลลูกค้า</a></li>
+                <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-suitcase"></i> ข้อมูลการจองห้องพัก</a></li>
+                <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+            </ul>
+        </div>
     </div>
+    <div class="container-wrapper">
+        <div class="container">
+            <h2>แก้ไขข้อมูลการจอง</h2>
+            <form action="" method="POST" enctype="multipart/form-data">
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>ชื่อผู้จอง</label>
+                        <input type="text" name="first_name" class="form-control" value="<?= $booking['first_name'] ?>"
+                            required>
+                    </div>
+                    <div class="col-md-6">
+                        <label>นามสกุลผู้จอง</label>
+                        <input type="text" name="last_name" class="form-control" value="<?= $booking['last_name'] ?>"
+                            required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>วันที่เช็คอิน</label>
+                        <input type="date" name="checkin_date" class="form-control"
+                            value="<?= $booking['checkin_date'] ?>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label>วันที่เช็คเอาท์</label>
+                        <input type="date" name="checkout_date" class="form-control"
+                            value="<?= $booking['checkout_date'] ?>" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>ประเภทห้อง</label>
+                        <select class="form-control" id="room_type" name="room_type" required onchange="fetchRooms()">
+                            <option value="">-- เลือกประเภทห้อง --</option>
+                            <?php
+    include 'db.php';
+    $room_query = "SELECT DISTINCT type FROM rooms WHERE isshow = 1";
+    $result = $conn->query($room_query);
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $selected = ($row['type'] == $booking['room_type']) ? "selected" : "";
+            echo "<option value='" . $row['type'] . "' $selected>" . $row['type'] . "</option>";
+        }
+    }
+    ?>
+                        </select>
+
+
+                    </div>
+                    <div class="col-md-6">
+                        <label>เลขห้อง</label>
+                        <select class="form-control" id="room_number" name="room_number" required
+                            onchange="fetchPrice(this.value)">
+                            <?php
+        include 'db.php';
+        $room_query = "SELECT room_number FROM rooms WHERE type = ? AND isshow = 1";
+        $stmt = $conn->prepare($room_query);
+        $stmt->bind_param("s", $booking['room_type']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        while ($row = $result->fetch_assoc()) {
+            $selected = ($row['room_number'] == $booking['room_number']) ? "selected" : "";
+            echo "<option value='" . $row['room_number'] . "' $selected>" . $row['room_number'] . "</option>";
+        }
+        ?>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>ราคา</label>
+                        <input type="number" name="price" class="form-control" value="<?= $booking['price'] ?>"
+                            required>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label>รูปแบบการชำระเงิน</label>
+                        <select name="payment_method" class="form-control" onchange="toggleSlipRequirement()" required>
+                            <option value="โอนเงิน" <?= ($booking['payment_method'] == "โอนเงิน") ? "selected" : "" ?>>
+                                โอนเงิน
+                            </option>
+                            <option value="เงินสด" <?= ($booking['payment_method'] == "เงินสด") ? "selected" : "" ?>>
+                                เงินสด
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>จำนวนผู้เข้าพัก:</label>
+                        <input type="number" name="guest_count" class="form-control"
+                            value="<?= $booking['guest_count'] ?>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label>จำนวนห้อง:</label>
+                        <input type="number" name="room_count" class="form-control"
+                            value="<?= $booking['room_count'] ?>" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label>รายละเอียด</label>
+                        <input type="text" name="description" class="form-control"
+                            value="<?= $booking['description'] ?>">
+                    </div>
+                </div>
+
+                <div class="row mb-3" id="slip_container">
+                    <div class="col-md-12">
+                        <label>สลิปการโอนเงิน</label>
+                        <input type="file" id="imgpayment" name="imgpayment" class="form-control">
+                    </div>
+                </div>
+
+                <br>
+                <div class="button-group">
+                    <button type="submit" class="submit-btn mt-3">บันทึกการเปลี่ยนแปลง</button>
+                    <button type="button" class="cancel-btn" onclick="window.history.back();">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+    function toggleSlipRequirement() {
+        var paymentMethod = document.querySelector('select[name="payment_method"]').value;
+        var slipContainer = document.getElementById("slip_container");
+
+        if (paymentMethod === "โอนเงิน") {
+            slipContainer.style.display = "block"; // แสดง
+        } else {
+            slipContainer.style.display = "none"; // ซ่อน
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        toggleSlipRequirement();
+    });
+
+    document.querySelector('select[name="payment_method"]').addEventListener("change", toggleSlipRequirement);
+
+    document.addEventListener("DOMContentLoaded", function() {
+        fetchRooms();
+    });
+
+    document.getElementById("room_number").addEventListener("change", function() {
+        fetchPrice(this.value);
+    });
+
+    function fetchRooms() {
+        var roomType = document.getElementById("room_type").value;
+        var roomNumberSelect = document.getElementById("room_number");
+
+        if (roomType) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "fetchRooms.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    roomNumberSelect.innerHTML = xhr.responseText;
+                    fetchPrice(roomNumberSelect.value); // อัปเดตราคาทันที
+                }
+            };
+            xhr.send("room_type=" + roomType);
+        }
+    }
+
+    function fetchPrice(roomNumber) {
+        var priceInput = document.querySelector('input[name="price"]');
+
+        if (roomNumber) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "fetchPrice.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    priceInput.value = xhr.responseText;
+                }
+            };
+            xhr.send("room_number=" + roomNumber);
+        }
+    }
+    </script>
+
 </body>
 
 </html>

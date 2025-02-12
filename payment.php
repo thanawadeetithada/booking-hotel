@@ -1,43 +1,27 @@
 <?php
 session_start();
-include 'db.php'; // ไฟล์เชื่อมต่อฐานข้อมูล
+include 'db.php';
 
-// ตรวจสอบว่าผู้ใช้ล็อกอินแล้วหรือไม่
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['email'])) {
-    header("Location: login.php");
-    exit();
+if (!isset($_GET['booking_id'])) {
+    die("ไม่มีรหัสการจอง");
 }
 
-// ดึงค่าอีเมลของผู้ใช้ที่ล็อกอิน
-$email = $_SESSION['email'] ?? ''; // ✅ ใช้ ?? เพื่อป้องกัน error ถ้าเซสชันไม่ถูกตั้งค่า
+$email = isset($_SESSION['email']) ? $_SESSION['email'] : "ไม่ทราบอีเมล";
+$phone = isset($_SESSION['phone']) ? $_SESSION['phone'] : "";
 
-// ตรวจสอบว่ามีค่า email จริงหรือไม่
-if (empty($email)) {
-    die("⚠️ ไม่พบข้อมูลอีเมล กรุณาเข้าสู่ระบบใหม่");
-}
+$booking_id = intval($_GET['booking_id']);
 
-// ดึงข้อมูลผู้ใช้จากฐานข้อมูล
-$sql = "SELECT first_name, last_name, phone FROM users WHERE email = ?";
+$sql = "SELECT * FROM booking WHERE booking_id = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
+$stmt->bind_param("i", $booking_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    $first_name = $user['first_name'];
-    $last_name = $user['last_name'];
-    $phone = $user['phone'];
-} else {
-    // กำหนดค่าเริ่มต้นหากไม่มีข้อมูล
-    $first_name = "";
-    $last_name = "";
-    $phone = "";
+if ($result->num_rows === 0) {
+    die("ไม่พบข้อมูลการจอง");
 }
 
-$stmt->close();
-$conn->close();
-
+$booking = $result->fetch_assoc();
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -113,37 +97,35 @@ $conn->close();
         <div class="row">
             <div class="col-md-6">
                 <h5>รายละเอียดลูกค้า</h5>
-                <form action="payment_process.php" method="POST">
+                <form id="customerForm" method="POST">
                     <div class="mb-3">
                         <label class="form-label">ชื่อ *</label>
                         <input type="text" class="form-control" name="first_name"
-                            value="<?php echo htmlspecialchars($first_name); ?>" required>
+                            value="<?= htmlspecialchars($booking['first_name']) ?>" disabled required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">นามสกุล *</label>
                         <input type="text" class="form-control" name="last_name"
-                            value="<?php echo htmlspecialchars($last_name); ?>" required>
+                            value="<?= htmlspecialchars($booking['last_name']) ?>" disabled required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">โทรศัพท์ *</label>
-                        <input type="text" class="form-control" name="phone"
-                            value="<?php echo htmlspecialchars($phone); ?>" required>
+                        <input type="text" class="form-control" name="phone" value="<?= htmlspecialchars($phone) ?>"
+                            disabled required>
                     </div>
-                    <button type="submit" class="btn btn-black">บันทึกและดำเนินการต่อ</button>
+
                 </form>
                 <br>
                 <div class="summary-box">
 
                     <img src="img/QR_code.jpg" alt="Product Image">
-
-
                     <hr>
                     <div>
-                        <form action="update_payment.php" method="POST" enctype="multipart/form-data">
+                        <form id="paymentForm" method="POST" enctype="multipart/form-data">
                             <label for="payment_proof">หากชำระเรียบร้อยแล้ว โปรดแนบหลักฐานการชำระเงิน</label>
                             <input type="file" name="payment_proof" id="payment_proof" required>
-                            <input type="hidden" name="cart_order_id"
-                                value="<?php echo htmlspecialchars($cart_order_id); ?>">
+                            <input type="hidden" name="payment_slip"
+                                value="<?= htmlspecialchars($booking['payment_slip']) ?>">
                         </form>
 
                     </div>
@@ -155,29 +137,66 @@ $conn->close();
                 <h5>สรุปรายการสั่งซื้อ</h5>
                 <div class="summary-box">
                     <div class="d-flex align-items-center">
-                        <!-- <img src="https://via.placeholder.com/60" alt="Product Image"> -->
                         <div class="ms-3">
-                            <p class="mb-0">ลานกางเต็นท์คามมายตารีสอร์ท</p>
-                            <p class="text-muted small">มัดจำ: ฿1200.00</p>
+                            <p class="mb-0"><strong><?= htmlspecialchars($booking['room_type']) ?></strong></p>
+                            <p class="mb-0">จำนวนห้อง <?= htmlspecialchars($booking['room_count']) ?> x จำนวนคนเข้าพัก
+                                <?= htmlspecialchars($booking['guest_count']) ?></p>
                         </div>
                     </div>
                     <hr>
                     <div>
-                        <p><strong>ยอดรวม:</strong> ฿1200.00</p>
+                        <p><strong>ยอดรวม:</strong> ฿<?= htmlspecialchars($booking['total_amount']) ?></p>
                         <p><strong>ภาษี:</strong> ฿0.00</p>
-                        <p><strong>รวมทั้งหมด:</strong> ฿800.00</p>
+                        <p><strong>รวมทั้งหมด:</strong> ฿<?= htmlspecialchars($booking['total_amount']) ?></p>
                     </div>
                     <hr>
-                    <p><strong>ชำระเงินตอนนี้:</strong> ฿1200.00</p>
+                    <p><strong>ชำระเงินตอนนี้:</strong> ฿<?= htmlspecialchars($booking['total_amount']) ?></p>
                     <p><strong>ชำระเงินภายหลัง:</strong> ฿0.00</p>
-                    <button class="btn btn-black mt-3">ชำระเงินแล้ว</button>
+                    <button id="paymentBtn" class="btn btn-black mt-3">ชำระเงิน</button>
                     <div class="locked-payment">
-                        🔒 ชำระเงินแล้ว
+                        🔒 ชำระเงิน
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const fileInput = document.getElementById("payment_proof");
+        const paymentBtn = document.getElementById("paymentBtn");
+        const paymentForm = document.getElementById("paymentForm");
+
+        // paymentBtn.disabled = true;
+
+        fileInput.addEventListener("change", function() {
+            paymentBtn.disabled = fileInput.files.length === 0;
+        });
+
+        paymentBtn.addEventListener("click", function() {
+            const formData = new FormData(paymentForm);
+            formData.append("booking_id", <?= $booking_id ?>);
+
+            fetch("process_payment.php", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json()) // แปลงเป็น JSON
+                .then(data => {
+                    if (data.status === "success") {
+                        alert("ชำระเงินสำเร็จ!");
+                        window.location.href = `receipt_booking.php?invoice_id=${data.invoice_id}`; // ใช้ค่า invoice_number ที่คืนมาจาก PHP
+                    } else {
+                        alert("กรุณาแนบสลิป");
+                        // alert("เกิดข้อผิดพลาด: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("เกิดข้อผิดพลาด: " + error);
+                });
+        });
+    });
+    </script>
 
 </body>
 

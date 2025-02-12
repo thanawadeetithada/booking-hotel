@@ -1,7 +1,12 @@
 <?php
 include 'db.php';
 
-$sql = "SELECT * FROM contact_messages ORDER BY created_at DESC";
+$sql = "SELECT m.id, m.user_id, u.first_name, u.last_name, u.email, MAX(m.created_at) AS created_at 
+FROM messages m
+LEFT JOIN users u ON m.user_id = u.user_id
+GROUP BY m.user_id
+ORDER BY created_at DESC";
+
 $result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
@@ -124,9 +129,36 @@ $result = $conn->query($sql);
 </head>
 
 <body>
-    <div class="navbar navbar-dark bg-dark justify-content-end">
-        <div class="nav-item d-flex">
-            <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
+    <nav class="navbar navbar-dark bg-dark px-3">
+        <div class="d-flex w-100 justify-content-between align-items-center">
+            <i class="fa-solid fa-bars text-white" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
+                style="cursor: pointer;"></i>
+            <div class="nav-item">
+                <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarMenu">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">รายการ</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="list-unstyled">
+                <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-regular fa-money-bill-1"></i> ข้อมูลกำหนดราคาห้องพัก</a></li>
+                <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-bed"></i> ข้อมูลห้องพัก</a></li>
+                <li><a href="dashboard_user.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-user"></i> ข้อมูลลูกค้า</a></li>
+                <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-suitcase"></i> ข้อมูลการจองห้องพัก</a></li>
+                <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+            </ul>
         </div>
     </div>
 
@@ -145,7 +177,6 @@ $result = $conn->query($sql);
                     <tr>
                         <th>ชื่อ</th>
                         <th>Email</th>
-                        <th>ข้อความ</th>
                         <th>วันที่ เวลา</th>
                         <th>จัดการ</th>
                     </tr>
@@ -154,20 +185,24 @@ $result = $conn->query($sql);
                     <?php
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            echo "<tr id='row_" . $row['id'] . "'>";
-            echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+            echo "<tr id='row_" . $row['user_id'] . "'>";
+
+            echo "<td>" . htmlspecialchars($row['first_name'] . " " . $row['last_name']) . "</td>";
             echo "<td>" . htmlspecialchars($row['email']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['message']) . "</td>";
             echo "<td>" . $row['created_at'] . "</td>";
             echo "<td>
-                <button class='btn btn-danger delete-btn' data-id='" . $row['id'] . "'>
-                    <i class='fas fa-trash'></i>
-                </button>
+                <a href='admin_messages.php?user_id=" . $row['user_id'] . "' class='btn btn-primary'>
+                    <i class='fa-solid fa-comment'></i>
+                </a>
+                &nbsp;&nbsp;
+                  <a href='#' class='btn btn-danger delete-btn' data-userid='" . $row['user_id'] . "'>
+                    <i class='fa-regular fa-trash-can'></i>
+                </a>
             </td>";
             echo "</tr>";
         }
     } else {
-        echo "<tr><td colspan='5' class='text-center'>ไม่มีข้อมูลการจอง</td></tr>";
+        echo "<tr><td colspan='4' class='text-center'>ไม่มีข้อมูลการจอง</td></tr>";
     }
     ?>
                 </tbody>
@@ -176,32 +211,38 @@ $result = $conn->query($sql);
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-    $(document).ready(function() {
-        $(".delete-btn").on("click", function(e) {
-            e.preventDefault();
-            var id = $(this).data("id");
-            var row = $(this).closest("tr");
+<script>
+$(document).ready(function() {
+    $(".delete-btn").click(function(e) {
+        e.preventDefault();
+        var user_id = $(this).data("userid");
+        var row = $("#row_" + user_id);
 
-            if (confirm("คุณต้องการลบใช่หรือไม่?")) {
-                $.post("delete_message.php", {
-                    id: id
-                }, function(response) {
-                    if (response === "success") {
-                        alert("ลบข้อมูลเรียบร้อยแล้ว!");
+        if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบข้อความของผู้ใช้นี้?")) {
+            $.ajax({
+                url: "delete_messages.php",
+                type: "POST",
+                data: { user_id: user_id },
+                success: function(response) {
+                    if (response.trim() === "success") {
+                        alert("ลบข้อความของผู้ใช้เรียบร้อย!");
                         row.fadeOut(500, function() {
                             $(this).remove();
-                        });
+                        }); // ✅ ลบแถวทันที
                     } else {
-                        alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+                        alert("เกิดข้อผิดพลาด: " + response);
                     }
-                }).fail(function() {
+                },
+                error: function() {
                     alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
-                });
-            }
-        });
+                }
+            });
+        }
     });
-    </script>
+});
+
+</script>
+
 </body>
 
 </html>

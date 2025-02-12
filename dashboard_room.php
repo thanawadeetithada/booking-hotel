@@ -28,9 +28,6 @@ $result = $conn->query($sql);
     }
 
     .card {
-        /* display: flex;
-            justify-content: center;
-            align-items: center; */
         padding: 30px;
         border-radius: 15px;
         box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
@@ -153,57 +150,83 @@ $result = $conn->query($sql);
 
 
     .switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 20px;
-}
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
 
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
 
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 20px;
-}
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 20px;
+    }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 14px;
-    width: 14px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
 
-input:checked + .slider {
-    background-color: #28a745;
-}
+    input:checked+.slider {
+        background-color: #28a745;
+    }
 
-input:checked + .slider:before {
-    transform: translateX(18px);
-}
-
+    input:checked+.slider:before {
+        transform: translateX(18px);
+    }
     </style>
 </head>
 
 <body>
-    <div class="navbar navbar-dark bg-dark justify-content-end">
-        <div class="nav-item d-flex">
-            <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
+    <nav class="navbar navbar-dark bg-dark px-3">
+        <div class="d-flex w-100 justify-content-between align-items-center">
+            <i class="fa-solid fa-bars text-white" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
+                style="cursor: pointer;"></i>
+            <div class="nav-item">
+                <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarMenu">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">รายการ</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="list-unstyled">
+                <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-regular fa-money-bill-1"></i> ข้อมูลกำหนดราคาห้องพัก</a></li>
+                <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-bed"></i> ข้อมูลห้องพัก</a></li>
+                <li><a href="dashboard_user.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-user"></i> ข้อมูลลูกค้า</a></li>
+                <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-suitcase"></i> ข้อมูลการจองห้องพัก</a></li>
+                <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+            </ul>
         </div>
     </div>
 
@@ -308,13 +331,16 @@ input:checked + .slider:before {
         });
     });
 
-  
+
     $(document).ready(function() {
         $(".toggle-status").on("change", function() {
             var room_id = $(this).data("id");
             var isshow = $(this).is(":checked") ? 1 : 0;
 
-            $.post("update_isshow.php", { room_id: room_id, isshow: isshow }, function(response) {
+            $.post("update_isshow.php", {
+                room_id: room_id,
+                isshow: isshow
+            }, function(response) {
                 if (response == "success") {
                     console.log("สถานะห้องพักอัปเดตสำเร็จ!");
                 } else {
@@ -325,8 +351,6 @@ input:checked + .slider:before {
             });
         });
     });
-
-
     </script>
 </body>
 

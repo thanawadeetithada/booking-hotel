@@ -19,7 +19,7 @@ if (isset($_GET['room_code'])) {
         exit();
     }
 } else {
-    echo "<script>alert('ไม่มีรหัสห้องพักที่ต้องการแก้ไข'); window.location.href = 'edit_room.php';</script>";
+    echo "<script>alert('ไม่มีรหัสห้องพักที่ต้องการแก้ไข'); window.location.href = 'dashboard_room.php';</script>";
     exit();
 }
 ?>
@@ -31,15 +31,29 @@ if (isset($_GET['room_code'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แก้ไขข้อมูลห้องพัก</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <style>
     body {
         font-family: 'Arial', sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
         height: 100vh;
         background: url('bg/sky.png') no-repeat center center/cover;
         margin: 0;
+    }
+
+    .nav-item a {
+        color: white;
+        margin-right: 1rem;
+    }
+
+    .navbar {
+        padding: 20px;
+    }
+
+    .nav-link:hover {
+        color: white;
     }
 
     .container {
@@ -48,13 +62,14 @@ if (isset($_GET['room_code'])) {
         border-radius: 15px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         width: 100%;
-        max-width: 400px;
+        max-width: 700px;
     }
 
     h2 {
         margin-bottom: 20px;
         color: black;
         text-align: center;
+        margin-top: 20px;
     }
 
     form {
@@ -69,24 +84,6 @@ if (isset($_GET['room_code'])) {
         margin-top: 10px;
     }
 
-
-    input {
-        width: calc(100% - 30px);
-        padding: 12px;
-        margin: 5px 0;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 16px;
-    }
-
-    select {
-        width: 98%;
-        padding: 12px;
-        margin: 5px 0;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 16px;
-    }
 
     button {
         width: 48%;
@@ -109,14 +106,33 @@ if (isset($_GET['room_code'])) {
         margin-left: 10px;
     }
 
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 40px;
-        height: 20px;
+    .form-control {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
     }
 
-    .switch input {
+    .form-label {
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
+
+    .container-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 56px);
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+
+    .toggle-switch input {
         opacity: 0;
         width: 0;
         height: 0;
@@ -130,72 +146,160 @@ if (isset($_GET['room_code'])) {
         right: 0;
         bottom: 0;
         background-color: #ccc;
+        border-radius: 24px;
         transition: .4s;
-        border-radius: 20px;
     }
 
     .slider:before {
         position: absolute;
         content: "";
-        height: 14px;
-        width: 14px;
-        left: 3px;
+        height: 18px;
+        width: 18px;
+        left: 4px;
         bottom: 3px;
         background-color: white;
-        transition: .4s;
         border-radius: 50%;
+        transition: .4s;
     }
 
     input:checked+.slider {
-        background-color: #28a745;
+        background-color: #4CAF50;
     }
 
     input:checked+.slider:before {
-        transform: translateX(18px);
+        transform: translateX(26px);
+    }
+
+    input[readonly] {
+        background-color: rgba(200, 200, 200, 0.5);
+        color: black;
+        border: 1px solid #ccc;
+        cursor: not-allowed;
     }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h2>แก้ไขข้อมูลห้องพัก</h2>
-        <form action="update_room.php" method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="room_code" value="<?php echo $room['room_code']; ?>">
-
-            <label for="room_number">เลขห้อง</label>
-            <input type="text" id="room_number" name="room_number" value="<?php echo $room['room_number']; ?>" required>
-
-            <label for="price">ราคา</label>
-            <input type="number" id="price" name="price" value="<?php echo $room['price']; ?>" required>
-
-            <label for="type">ประเภท</label>
-            <select id="type" name="type" required>
-                <option value="">-- เลือกประเภท --</option>
-                <option value="ห้องพัก" <?php echo ($room['type'] == 'ห้องพัก') ? 'selected' : ''; ?>>ห้องพัก</option>
-                <option value="เต็นท์" <?php echo ($room['type'] == 'เต็นท์') ? 'selected' : ''; ?>>เต็นท์</option>
-            </select>
-
-            <label for="description">รายละเอียด</label>
-            <input type="text" id="description" name="description" value="<?php echo $room['description']; ?>" required>
-
-            <label for="image">รูปภาพ</label>
-            <input type="file" id="image" name="image">
-
-            <label for="isshow">สถานะการทำงาน</label>
-            <label class="switch">
-                <input type="checkbox" id="isshow" name="isshow" value="1"
-                    <?php echo ($room['isshow'] == 1) ? 'checked' : ''; ?>>
-                <span class="slider round"></span>
-            </label>
-
-            <br>
-            <div class="button-group">
-                <button type="submit" class="submit-btn">บันทึกข้อมูล</button>
-                <button type="button" class="cancel-btn"
-                    onclick="window.location.href='dashboard_room.php'">ยกเลิก</button>
+    <nav class="navbar navbar-dark bg-dark px-3">
+        <div class="d-flex w-100 justify-content-between align-items-center">
+            <i class="fa-solid fa-bars text-white" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
+                style="cursor: pointer;"></i>
+            <div class="nav-item">
+                <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
             </div>
-        </form>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarMenu">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">รายการ</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="list-unstyled">
+                <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-regular fa-money-bill-1"></i> ข้อมูลกำหนดราคาห้องพัก</a></li>
+                <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-bed"></i> ข้อมูลห้องพัก</a></li>
+                <li><a href="dashboard_user.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-user"></i> ข้อมูลลูกค้า</a></li>
+                <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-suitcase"></i> ข้อมูลการจองห้องพัก</a></li>
+                <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+            </ul>
+        </div>
     </div>
+    <div class="container-wrapper">
+        <div class="container">
+            <h2>แก้ไขข้อมูลห้องพัก</h2>
+            <form action="update_room.php" method="POST" enctype="multipart/form-data">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="room_code" class="form-label">รหัสห้อง</label>
+                        <input class="form-control" type="text" id="room_code" name="room_code"
+                            value="<?php echo $room['room_code']; ?>" readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="room_number" class="form-label">เลขห้อง</label>
+                        <input class="form-control" type="text" id="room_number" name="room_number"
+                            value="<?php echo $room['room_number']; ?>" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="price" class="form-label">ราคา</label>
+                        <input class="form-control" type="number" id="price" name="price"
+                            value="<?php echo $room['price']; ?>" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="type" class="form-label">ประเภท</label>
+                        <select class="form-control" id="type" name="type" required>
+                            <option value="">-- เลือกประเภท --</option>
+                            <option value="ห้องพัก" <?php echo ($room['type'] == 'ห้องพัก') ? 'selected' : ''; ?>>
+                                ห้องพัก</option>
+                            <option value="เต็นท์" <?php echo ($room['type'] == 'เต็นท์') ? 'selected' : ''; ?>>เต็นท์
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="description" class="form-label">รายละเอียด</label>
+                        <input class="form-control" type="text" id="description" name="description"
+                            value="<?php echo $room['description']; ?>" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="image" class="form-label">รูปภาพ</label><br>
+                        <?php if (!empty($room['image_path'])): ?>
+                        <img id="preview-image" src="<?php echo $room['image_path']; ?>" alt="Room Image" width="200px"
+                            style="display:block; margin-bottom:10px;">
+                        <?php else: ?>
+                        <img id="preview-image" src="" alt="Preview Image" width="200px"
+                            style="display:none; margin-bottom:10px;">
+                        <?php endif; ?>
+                        <input class="form-control" type="file" id="image" name="image" accept="image/*">
+                        <input type="hidden" name="existing_image" value="<?php echo $room['image_path']; ?>">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="isshow" class="form-label">สถานะการทำงาน</label>
+                        <br>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="isshow" name="isshow" value="1"
+                                <?php echo ($room['isshow'] == 1) ? 'checked' : ''; ?>>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <br>
+                <div class="button-group">
+                    <button type="submit" class="submit-btn">บันทึกข้อมูล</button>
+                    <button type="button" class="cancel-btn"
+                        onclick="window.location.href='dashboard_room.php'">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+    document.getElementById('image').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const preview = document.getElementById('preview-image');
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        }
+    });
+    </script>
 </body>
 
 </html>

@@ -8,26 +8,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = $_POST['price'];
     $type = $_POST['type'];
     $description = $_POST['description'];
-    $isshow = isset($_POST['isshow']) ? 1 : 0; // รับค่า isshow (เปิด = 1, ปิด = 0)
+    $isshow = isset($_POST['isshow']) ? 1 : 0;
+    $image_path = $_POST['existing_image'];
 
-    if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
-        $image_name = basename($_FILES["image"]["name"]);
-        $image_path = "uploads/" . $image_name;
-        move_uploaded_file($_FILES["image"]["tmp_name"], $image_path);
+    if (!empty($_FILES["image"]["name"])) {
+        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+        $file_ext = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+        if (in_array($file_ext, $allowed_types)) {
+            $new_filename = "uploads/" . uniqid("room_", true) . "." . $file_ext;
+            if (move_uploaded_file($_FILES["image"]["tmp_name"], $new_filename)) {
+                $image_path = $new_filename;
+            } else {
+                echo "<script>alert('เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ'); window.history.back();</script>";
+                exit();
+            }
+        } else {
+            echo "<script>alert('รองรับเฉพาะไฟล์ JPG, JPEG, PNG, และ GIF เท่านั้น'); window.history.back();</script>";
+            exit();
+        }
 
-        $sql = "UPDATE rooms SET room_number = ?, price = ?, type = ?, description = ?, image_path = ?, isshow = ? WHERE room_code = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdsssis", $room_number, $price, $type, $description, $image_path, $isshow, $room_code);
-    } else {
-        $sql = "UPDATE rooms SET room_number = ?, price = ?, type = ?, description = ?, isshow = ? WHERE room_code = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdssis", $room_number, $price, $type, $description, $isshow, $room_code);
-    }
-
+    $sql = "UPDATE rooms SET room_number = ?, price = ?, type = ?, description = ?, image_path = ?, isshow = ? WHERE room_code = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sdsssis", $room_number, $price, $type, $description, $image_path, $isshow, $room_code);
+} else {
+    $sql = "UPDATE rooms SET room_number = ?, price = ?, type = ?, description = ?, isshow = ? WHERE room_code = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sdssis", $room_number, $price, $type, $description, $isshow, $room_code);
+}
     if ($stmt->execute()) {
         echo "<script>alert('อัปเดตข้อมูลสำเร็จ!'); window.location.href = 'dashboard_room.php';</script>";
     } else {
-        echo "<script>alert('เกิดข้อผิดพลาด: " . $conn->error . "');</script>";
+        echo "<script>alert('เกิดข้อผิดพลาด: " . $conn->error . "'); window.history.back();</script>";
     }
 
     $stmt->close();

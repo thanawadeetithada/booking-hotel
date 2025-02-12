@@ -22,9 +22,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['first_name'] = $user['first_name'];
+                $_SESSION['last_name'] = $user['last_name'];
                 $_SESSION['userrole'] = $user['userrole'];
-                $_SESSION['email'] = $user['email']; // ✅ เพิ่มเซสชันนี้ให้แน่ใจว่าใช้งานได้
-            
+                $_SESSION['email'] = $user['email'];
+                $_SESSION['phone'] = $user['phone'];
+
                 // ตรวจสอบบทบาทและเปลี่ยนหน้า
                 if ($user['userrole'] == 'admin') {
                     header("Location: admin_dashboard.php");

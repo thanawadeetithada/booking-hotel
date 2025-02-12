@@ -1,13 +1,92 @@
+<?php
+include 'db.php';
+
+$startDate = isset($_POST['startDate']) ? $_POST['startDate'] : null;
+$endDate = isset($_POST['endDate']) ? $_POST['endDate'] : null;
+
+$startDateFormatted = date('Y-m-d', strtotime($startDate));
+$endDateFormatted = date('Y-m-d', strtotime($endDate));
+
+$searchPerformed = isset($_POST['startDate']) && isset($_POST['endDate']);
+
+// ✅ ดึงข้อมูล **ห้องพัก (rooms)**
+$sql_rooms = "SELECT r.room_code, r.room_number, r.price, r.type, r.description, r.image_path
+        FROM rooms r
+        WHERE r.isshow = 1
+        AND NOT EXISTS (
+            SELECT 1 FROM booking b
+            WHERE b.room_number = r.room_number
+            AND (
+                (b.checkin_date BETWEEN '$startDateFormatted' AND '$endDateFormatted') OR
+                (b.checkout_date BETWEEN '$startDateFormatted' AND '$endDateFormatted') OR
+                ('$startDateFormatted' BETWEEN b.checkin_date AND b.checkout_date)
+            )
+        )";
+
+$result_rooms = $conn->query($sql_rooms);
+
+$rooms = [];
+if ($result_rooms->num_rows > 0) {
+    while ($row = $result_rooms->fetch_assoc()) {
+        $rooms[] = $row;
+    }
+}
+
+// ✅ ดึงข้อมูล **เต็นท์ (tents)**
+$sql_tents = "SELECT r.room_number, r.price, r.type, r.description, r.image_path
+        FROM rooms r
+        WHERE r.isshow = 1 AND r.type = 'เต็นท์'";
+
+$result_tents = $conn->query($sql_tents);
+
+$tents = [];
+if ($result_tents->num_rows > 0) {
+    while ($row = $result_tents->fetch_assoc()) {
+        $tents[] = $row;
+    }
+}
+
+// ✅ ดึงข้อมูลเต็นท์ที่ถูกจองจาก `invoice`
+$bookedTents = [];
+if ($searchPerformed) {
+    $sql_tent_booking = "SELECT room_number FROM invoice
+                         WHERE room_type = 'เต็นท์'
+                         AND (
+                            (checkin_date BETWEEN '$startDateFormatted' AND '$endDateFormatted') OR
+                            (checkout_date BETWEEN '$startDateFormatted' AND '$endDateFormatted') OR
+                            ('$startDateFormatted' BETWEEN checkin_date AND checkout_date)
+                         )";
+
+    $result_tent_booking = $conn->query($sql_tent_booking);
+
+    if ($result_tent_booking->num_rows > 0) {
+        while ($row = $result_tent_booking->fetch_assoc()) {
+            $bookedTents[] = $row['room_number'];
+        }
+    }
+}
+
+$conn->close();
+
+?>
+
 <!DOCTYPE html>
 <html lang="th">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service | ผาชมดาว</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
+    <title>จองห้องพัก</title>
+
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- jQuery & jQuery UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
     body {
@@ -56,96 +135,6 @@
         height: 100px;
     }
 
-    .btn {
-        z-index: 1;
-        display: inline-block;
-        background: #ffd936;
-        color: black;
-        padding: 10px 20px;
-        text-decoration: none;
-        font-size: 1.5rem;
-        border-radius: 5px;
-        margin-top: 40vh;
-    }
-
-    /* Gallery Section */
-    .gallery {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        padding: 40px;
-    }
-
-    .gallery-item img {
-        width: 300px;
-        height: 250px;
-        border-radius: 10px;
-    }
-
-    .gallery-item p {
-        color: #535d4c;
-    }
-
-    /* News Section */
-    .news {
-        text-align: center;
-        padding: 40px;
-    }
-
-    .news-item img {
-        width: 50%;
-        border-radius: 10px;
-    }
-
-    .news-item p {
-        font-size: 1.5rem;
-    }
-
-    footer nav a {
-        color: white;
-        margin: 0 15px;
-        text-decoration: none;
-    }
-
-    footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #414678;
-        color: white;
-        text-align: center;
-        padding: 10px;
-    }
-
-    nav {
-        display: flex;
-        gap: 15px;
-    }
-
-    .logo-footer img {
-        width: 100px;
-        height: auto;
-    }
-
-    @media (max-width: 768px) {
-        .hero h1 {
-            font-size: 3rem;
-        }
-
-        .hero p {
-            font-size: 1.5rem;
-        }
-
-        .gallery {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .news-item img {
-            width: 90%;
-        }
-    }
-
     .navbar {
         display: flex;
         justify-content: space-between;
@@ -181,76 +170,53 @@
         border-radius: 5px;
     }
 
-    .search-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 40px;
-    }
-
-    .search-box {
-        display: flex;
+    .booking-container {
+        max-width: 600px;
         background: white;
-        padding: 15px;
-        /* เพิ่ม padding */
+        padding: 20px;
         border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border: 3px solid #FFC107;
-        overflow: hidden;
-        width: 60%;
-        /* เพิ่มความกว้างของกล่องค้นหา */
-        max-width: 900px;
-        /* จำกัดความกว้างสูงสุด */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     }
 
-    .search-box input,
-    .search-box select {
+    .input-group-text {
+        background-color: #007bff;
+        color: white;
         border: none;
-        padding: 12px;
-        font-size: 1.2rem;
-        /* เพิ่มขนาดตัวอักษร */
-        outline: none;
-        width: 100%;
-        /* ให้กินพื้นที่เต็ม */
     }
 
-    input {
+    .small-input {
+        width: 50px;
         text-align: center;
     }
 
-    .search-box input i {
-        font-weight: bold;
-    }
-
-    .search-box select {
-        cursor: pointer;
-    }
-
-    .search-box button {
-        background: #0073E6;
+    .btn-custom {
+        width: auto;
+        background-color: #007bff;
         color: white;
-        border: none;
-        padding: 12px 20px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        border-radius: 5px;
-        margin: 10px;
+        font-size: 18px;
     }
 
-    .search-box button:hover {
-        background: #0053A6;
+    .btn-custom:hover {
+        background-color: #0056b3;
     }
-/* 
-    .icon {
-        padding: 12px;
-        font-size: 1.5rem;
-        color: #333;
-    } */
 
+    .logo-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .logo-container i {
+        margin-bottom: 20px;
+        font-size: 25px;
+        margin-right: 10px;
+        color: black;
+    }
+
+    /* /////card hote; */
     .hotel-listing {
         display: flex;
         justify-content: center;
-        margin: 40px 0;
+        /* margin: 20px 0; */
     }
 
     .hotel-card {
@@ -272,8 +238,29 @@
 
     .hotel-info {
         width: 100%;
-        padding: 40px 90px;
+        padding: 40px 40px 15px 40px;
         position: relative;
+    }
+
+    .empty-hotel {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .empty-hotel-details {
+        display: flex;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 2px solid #ddd;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        padding: 30px;
+    }
+
+    .empty-hotel-details p {
+        margin: 0;
     }
 
     .booking-button {
@@ -289,37 +276,61 @@
         margin: 0;
     }
 
-
-    .price-button:hover {
-        background: #0053A6;
-    }
-
-    @media (max-width: 768px) {
-        .hotel-card {
-            flex-direction: column;
-            width: 90%;
-        }
-
-        .hotel-image {
-            width: 100%;
-            height: 180px;
-        }
-    }
-
-    .hotel-icon-container {
+    .hotel-listing {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
-        padding-right: 20px;
-        justify-content: center;
+        gap: 20px;
+        /* ระยะห่างระหว่างแถว */
+        padding: 0 20px 20px 20px;
     }
 
+    .btn-reserve {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .form-control {
+        width: auto;
+    }
+
+    /* /////////////tent */
     .hotel-icon {
         display: flex;
+        flex-wrap: wrap;
+        /* จัดให้ไอคอนไม่ติดกันเกินไป */
         justify-content: center;
-        gap: 15px;
-        /* ระยะห่างระหว่างไอคอน */
+        gap: 20px;
+    }
+
+    .tent-box {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tent-icon {
+        font-size: 3rem;
+        /* เพิ่มขนาดไอคอนให้ใหญ่ขึ้น */
+        color: blue;
+        /* สีเริ่มต้น */
+    }
+
+    .tent-icon.booked {
+        color: gray !important;
+        /* เปลี่ยนสีถ้าถูกจอง */
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .tent-number {
+        margin-top: 5px;
+        /* ขยับตัวเลขลงมาให้อยู่ด้านล่างไอคอน */
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: black;
+        text-align: center;
     }
 
     .hotel-icon i {
@@ -327,143 +338,253 @@
         color: #0073E6;
     }
 
-    .booking-button {
-        background: #0073E6;
+    .hotel-icon-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-sesrch-book {
+        display: flex;
+        justify-content: center;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        margin: 40px auto;
+    }
+
+    .news {
+        text-align: center;
+        padding: 40px;
+    }
+
+    .news-item img {
+        width: 50%;
+        border-radius: 10px;
+    }
+
+    .news-item p {
+        font-size: 1.5rem;
+    }
+
+    .gallery {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 40px;
+    }
+
+    .gallery-item img {
+        width: 300px;
+        height: 250px;
+        border-radius: 10px;
+    }
+
+    .gallery-item p {
+        color: #535d4c;
+    }
+
+    footer nav a {
         color: white;
-        border: none;
-        padding: 10px 15px;
-        font-size: 1rem;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 10px;
+        margin: 0 15px;
+        text-decoration: none;
     }
 
-    .booking-tent-button {
-        background: #0073E6;
+    footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #414678;
         color: white;
-        border: none;
-        padding: 10px 15px;
-        font-size: 1rem;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 10px;
+        text-align: center;
+        padding: 10px;
     }
 
-    select option {
-        font-size: 1rem;
+    nav {
+        display: flex;
+        gap: 15px;
     }
 
-    .booking-button, .booking-tent-button {
-    background: gray;
-    cursor: not-allowed;
-    opacity: 0.5;
-}
+    .logo-footer img {
+        width: 100px;
+        height: auto;
+    }
 
+    .tent-icon.selected {
+        color: green !important;
+    }
     </style>
 </head>
 
 <body>
+
     <header class="hero">
         <!-- Navigation Bar -->
         <nav class="navbar">
-            <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
+            <div class="logo-container">
+                <i class="fa-solid fa-arrow-left" onclick="goBack()"></i>
+                <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
+            </div>
             <ul class="nav-links">
                 <li><a href="index.php">Home</a></li>
                 <li><a href="service.php">Services</a></li>
                 <li><a href="contact.php">Contact</a></li>
+                <li><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
             </ul>
         </nav>
         <div class="overlay"></div>
     </header>
 
+    <div class="container">
+        <div class="booking-container">
+            <h3 class="text-center mb-4">📅 จองห้องพักของคุณ</h3>
 
-    <div class="search-container">
-    <div class="search-box">
-        <!-- <span class="icon"><i class="fas fa-calendar"></i></span> -->
-        <input type="date" id="checkin" placeholder="Check-in Date" onchange="updateCheckoutMinDate()">
-        
-        <!-- <span class="icon"><i class="fas fa-calendar"></i></span> -->
-        <input type="date" id="checkout" placeholder="Check-out Date">
-
-        <!-- <span class="icon"><i class="fas fa-user"></i></span> -->
-        <select>
-            <option>ผู้ใหญ่ 2 - เด็ก 0 - 1 ห้อง</option>
-            <option>ผู้ใหญ่ 1 - เด็ก 0 - 1 ห้อง</option>
-            <option>ผู้ใหญ่ 2 - เด็ก 1 - 1 ห้อง</option>
-        </select>
-
-        <button>ค้นหา</button>
-    </div>
-</div>
-
-
-    <!-- Hotel Listing -->
-    <section class="hotel-listing">
-        <div class="hotel-card">
-            <img src="room/home.jpg" alt="Jomtien Longstay Hotel" class="hotel-image">
-            <div class="hotel-info">
-                <div>
-                    <h3>ข้อมูลห้องพัก <span class="stars"></span></h3>
-                    <p>บ้านพัก 1 ห้องนอน 1 ห้องน้ำ</p>
-                    <h4>ราคา 1,200 บาท/คืน</h4>
-                </div>
-                <button class="booking-button">จองที่พัก</button>
-            </div>
-        </div>
-    </section>
-
-
-    <section class="hotel-listing">
-        <div class="hotel-card">
-            <img src="room/tent.jpg" alt="Jomtien Longstay Hotel" class="hotel-image">
-            <div class="hotel-info">
-                <h3>ข้อมูลเต็นท์ <span class="stars"></span></h3>
-                <p>ห้องน้ำรวม</p>
-                <h4>ราคา 150 บาท/คน</h4>
-            </div>
-
-            <div class="hotel-icon-container">
-                <div class="hotel-icon">
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                </div>
-                <div class="hotel-icon">
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                </div>
-                <div class="hotel-icon">
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                    <i class="fa-solid fa-tent" style="color:gray"></i>
-                </div>
-
-                <div class="hotel-icon"></div>
-                <div class="hotel-icon"></div>
-                <div class="hotel-icon1">
-                    <div class="hotel-icon">
-                        <i class="fa-solid fa-tent" style="font-size: 20px; color:gray"></i>จองได้
-                        <i class="fa-solid fa-tent" style="font-size: 20px; color:red"></i>เต็ม
-
+            <form action="" method="POST">
+                <!-- Date Picker -->
+                <div class="mb-3">
+                    <label class="form-label">📅 วันที่เข้าพัก - วันที่ออก</label>
+                    <div class="input-group">
+                        <input type="text" id="startDate" name="startDate" class="form-control" placeholder="เช็คอิน"
+                            value="<?= isset($_POST['startDate']) ? htmlspecialchars($_POST['startDate']) : '' ?>">
+                        <span class="input-group-text">—</span>
+                        <input type="text" id="endDate" name="endDate" class="form-control" placeholder="เช็คเอาท์"
+                            value="<?= isset($_POST['endDate']) ? htmlspecialchars($_POST['endDate']) : '' ?>">
                     </div>
-                    <button style="margin-left: 40px;" class="booking-tent-button">จองที่พัก</button>
-
-
+                </div>
+                <!-- จำนวนผู้ใหญ่ และ จำนวนห้อง (บรรทัดเดียวกัน) -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">👨‍👩‍👧‍👦 จำนวนผู้ใหญ่</label>
+                        <div class="input-group">
+                            <button type="button" class="btn btn-outline-secondary minus-btn"
+                                data-target="adults">-</button>
+                            <input type="text" id="adults" name="adults" class="form-control small-input"
+                                value="<?= isset($_POST['adults']) ? htmlspecialchars($_POST['adults']) : '2' ?>">
+                            <button type="button" class="btn btn-outline-secondary plus-btn"
+                                data-target="adults">+</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">🏨 จำนวนห้อง</label>
+                        <div class="input-group">
+                            <button type="button" class="btn btn-outline-secondary minus-btn"
+                                data-target="rooms">-</button>
+                            <input type="text" id="rooms" name="rooms" class="form-control small-input"
+                                value="<?= isset($_POST['rooms']) ? htmlspecialchars($_POST['rooms']) : '1' ?>">
+                            <button type="button" class="btn btn-outline-secondary plus-btn"
+                                data-target="rooms">+</button>
+                        </div>
+                    </div>
                 </div>
 
-            </div>
 
+                <div class="btn-sesrch-book">
+                    <button type="submit" id="searchButton" class="btn btn-custom">🔍 ค้นหา</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <?php if ($searchPerformed && !empty($rooms)): ?>
+    <section class="hotel-listing">
+        <?php 
+        $displayed_images = []; 
+        $room_numbers_by_image = []; 
+        foreach ($rooms as $room) {
+            $room_numbers_by_image[$room['image_path']][] = $room['room_number'];
+        }
+
+        foreach ($rooms as $room): 
+            if (!in_array($room['image_path'], $displayed_images)): 
+                $displayed_images[] = $room['image_path'];
+    ?>
+        <div class="hotel-card">
+            <img src="<?= htmlspecialchars($room['image_path']) ?>" alt="ห้องพัก" class="hotel-image">
+            <div class="hotel-info">
+                <h3>ข้อมูลห้องพัก</h3>
+                <p><?= nl2br(htmlspecialchars($room['description'])) ?></p>
+                <p><strong>ราคา <?= number_format($room['price'], 2) ?> บาท/คืน</strong></p>
+                <label for="roomSelect<?= md5($room['image_path']) ?>">เลือกหมายเลขห้อง </label><br>
+
+                <select class="form-control" id="roomSelect<?= md5($room['image_path']) ?>" name="room_number">
+                    <?php foreach (array_unique($room_numbers_by_image[$room['image_path']]) as $room_number): ?>
+                    <option value="<?= htmlspecialchars($room_number) ?>">ห้อง <?= htmlspecialchars($room_number) ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="btn-reserve">
+                    <button type="button" class="btn btn-custom mt-2"
+                        onclick="bookRoom('<?= htmlspecialchars($room['room_number']) ?>', '<?= htmlspecialchars($room['type']) ?>', '<?= htmlspecialchars($room['price']) ?>')">
+                        จองห้องพัก
+                    </button>
+                </div>
+            </div>
+        </div>
+        <?php 
+            endif;
+        endforeach; 
+    ?>
+    </section>
+    <?php endif; ?>
+
+
+    <?php if ($searchPerformed && !empty($tents)): ?>
+    <section class="hotel-listing">
+        <?php 
+        $displayed_images = [];
+        foreach ($tents as $tent): 
+            if (!in_array($tent['image_path'], $displayed_images)): 
+                $displayed_images[] = $tent['image_path'];
+    ?>
+        <div class="hotel-card">
+            <img src="<?= htmlspecialchars($tent['image_path']) ?>" alt="เต็นท์" class="hotel-image">
+            <div class="hotel-info">
+                <h3>ข้อมูลเต็นท์</h3>
+                <p><?= nl2br(htmlspecialchars($tent['description'])) ?></p>
+                <p><strong>ราคา <?= number_format($tent['price'], 2) ?> บาท/คน</strong></p>
+                <div class="hotel-icon-container">
+                    <div class="hotel-icon">
+                        <?php foreach ($tents as $tent): 
+                $roomNumber = $tent['room_number'];
+                $isBooked = in_array($roomNumber, $bookedTents); // ตรวจสอบว่าถูกจองหรือไม่
+            ?>
+                        <div class="tent-box">
+                            <i class="fa-solid fa-tent tent-icon <?= $isBooked ? 'booked' : '' ?>"></i>
+                            <span class="tent-number"><?= $roomNumber ?></span>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div class="btn-reserve">
+                    <button type="button" class="btn btn-custom"
+                        onclick="bookTent('<?= htmlspecialchars($tent['room_number']) ?>', '<?= htmlspecialchars($tent['type']) ?>', '<?= htmlspecialchars($tent['price']) ?>')">
+                        จองเต็นท์
+                    </button>
+
+                </div>
+            </div>
+        </div>
+        <?php 
+            endif;
+        endforeach; 
+    ?>
+    </section>
+    <?php endif; ?>
+
+    <?php if ($searchPerformed && empty($rooms) && empty($tents)): ?>
+    <section class="empty-hotel">
+        <div class="empty-hotel-details">
+            <p class="text-center">ไม่มีห้องพักหรือเต็นท์ที่พร้อมให้จองในขณะนี้</p>
         </div>
     </section>
+    <?php endif; ?>
 
-
-
-
-    <!-- News Section -->
     <section class="news">
         <h2>ข่าวสารประชาสัมพันธ์</h2>
         <div class="news-item">
@@ -494,73 +615,185 @@
         </div>
     </footer>
 
+
+    <!-- JavaScript -->
     <script>
-   document.addEventListener("DOMContentLoaded", function () {
-    let checkinInput = document.getElementById("checkin");
-    let checkoutInput = document.getElementById("checkout");
-    let searchButton = document.querySelector(".search-box button");
+    $(document).ready(function() {
+        // Datepicker
+        $("#startDate, #endDate").datepicker({
+            dateFormat: "dd M yy",
+            minDate: 0
+        });
 
-    // ปิดใช้งานปุ่มค้นหาเริ่มต้น
-    searchButton.disabled = true;
-    searchButton.style.background = "gray";
-    searchButton.style.cursor = "not-allowed";
-    searchButton.style.opacity = "0.5";
-
-    // ตรวจสอบว่าผู้ใช้กรอกข้อมูลครบหรือไม่
-    function checkInputFields() {
-        if (checkinInput.value && checkoutInput.value) {
-            searchButton.disabled = false;
-            searchButton.style.background = "#0073E6"; // เปลี่ยนเป็นสีปกติ
-            searchButton.style.cursor = "pointer";
-            searchButton.style.opacity = "1";
-        } else {
-            searchButton.disabled = true;
-            searchButton.style.background = "gray";
-            searchButton.style.cursor = "not-allowed";
-            searchButton.style.opacity = "0.5";
+        // ถ้ามีค่าถูกส่งมาแล้ว ให้ Datepicker ตั้งค่าตามที่เคยเลือกไว้
+        if ($("#startDate").val()) {
+            $("#startDate").datepicker("setDate", new Date($("#startDate").val()));
         }
-    }
+        if ($("#endDate").val()) {
+            $("#endDate").datepicker("setDate", new Date($("#endDate").val()));
+        }
 
-    // เพิ่ม event listener เมื่อผู้ใช้เปลี่ยนค่าใน input
-    checkinInput.addEventListener("input", checkInputFields);
-    checkoutInput.addEventListener("input", checkInputFields);
+        $("#startDate").on("change", function() {
+            var minDate = $(this).datepicker("getDate");
+            $("#endDate").datepicker("option", "minDate", minDate);
+        });
 
-    // ฟังก์ชันอัปเดต min date ของ checkout
-    checkinInput.addEventListener("change", function () {
-        checkoutInput.min = checkinInput.value;
+        // ปุ่มเพิ่ม/ลดจำนวน
+        $(".plus-btn").click(function() {
+            var target = $(this).data("target");
+            var input = $("#" + target);
+            var value = parseInt(input.val()) + 1;
+            input.val(value);
+        });
+
+        $(".minus-btn").click(function() {
+            var target = $(this).data("target");
+            var input = $("#" + target);
+            var value = parseInt(input.val()) - 1;
+            if (value > 0) input.val(value);
+        });
+
+        // ตรวจสอบค่าก่อนส่งฟอร์ม
+        $("form").on("submit", function(event) {
+            var startDate = $("#startDate").val();
+            var endDate = $("#endDate").val();
+
+            if (!startDate || !endDate) {
+                alert("กรุณากรอกวันที่เข้าพัก และวันที่ออกให้ครบถ้วน");
+                event.preventDefault(); // ป้องกันการ submit ฟอร์ม
+            }
+        });
+        $(".tent-icon").click(function() {
+            if (!$(this).hasClass("booked")) {
+                $(this).toggleClass("selected"); // เพิ่มหรือเอาคลาสออกเมื่อกด
+            }
+        });
     });
 
-    // ปิดใช้งานปุ่มจองที่พักตั้งแต่แรก
-    document.querySelectorAll('.booking-button, .booking-tent-button').forEach(button => {
-        button.disabled = true;
-        button.style.background = "gray";
-        button.style.cursor = "not-allowed";
-        button.style.opacity = "0.5";
-    });
+    function bookRoom(roomNumber, roomType, price) {
+        $.ajax({
+            url: "check_login.php",
+            method: "GET",
+            dataType: "json",
+            success: function(response) {
+                if (response.status === "not_logged_in") {
+                    window.location.href = "login.php";
+                } else if (response.status === "logged_in") {
+                    let checkinDate = $("#startDate").val();
+                    let checkoutDate = $("#endDate").val();
+                    let guestCount = $("#adults").val();
+                    let roomCount = $("#rooms").val();
+                    let firstName = response.first_name || "Guest";
+                    let lastName = response.last_name || "User";
+                    let description = "การจองห้องพักผ่านระบบ";
+                    let paymentMethod = "โอนเงิน";
 
-    // ฟังก์ชันเปิดใช้งานปุ่มจอง
-    function enableBookingButtons() {
-        document.querySelectorAll('.booking-button, .booking-tent-button').forEach(button => {
-            button.disabled = false;
-            button.style.background = "#0073E6"; // เปลี่ยนเป็นสีปกติ
-            button.style.cursor = "pointer";
-            button.style.opacity = "1";
+                    if (!checkinDate || !checkoutDate) {
+                        alert("กรุณากรอกวันที่เข้าพักและวันที่ออกจากที่พัก");
+                        return;
+                    }
+
+                    $.ajax({
+                        url: "insert_booking.php",
+                        method: "POST",
+                        data: {
+                            first_name: firstName,
+                            last_name: lastName,
+                            checkin_date: checkinDate,
+                            checkout_date: checkoutDate,
+                            room_number: roomNumber,
+                            room_type: roomType,
+                            guest_count: guestCount,
+                            room_count: roomCount,
+                            price: price,
+                            description: description,
+                            payment_method: paymentMethod
+                        },
+                        dataType: "json",
+                        success: function(response) {
+                            if (response.status === "success") {
+                                window.location.href =
+                                    `payment.php?booking_id=${response.booking_id}`;
+                            } else {
+                                alert("เกิดข้อผิดพลาดในการจอง: " + response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error:", xhr.responseText);
+                            alert("เกิดข้อผิดพลาด: " + xhr.responseText);
+                        }
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error:", xhr.responseText);
+                alert("เกิดข้อผิดพลาด: " + xhr.responseText);
+            }
         });
     }
 
-    // ผูกฟังก์ชันกับปุ่ม "ค้นหา"
-    searchButton.addEventListener("click", enableBookingButtons);
+    function bookTent(roomNumber, roomType, price) {
+        $.ajax({
+            url: "check_login.php", // ตรวจสอบว่าผู้ใช้ล็อกอินหรือยัง
+            method: "GET",
+            dataType: "json",
+            success: function(response) {
+                if (response.status === "not_logged_in") {
+                    window.location.href = "login.php"; // ถ้าไม่ได้ล็อกอิน ให้ไปหน้า login
+                } else if (response.status === "logged_in") {
+                    let checkinDate = $("#startDate").val();
+                    let checkoutDate = $("#endDate").val();
+                    let guestCount = $("#adults").val();
+                    let roomCount = $("#rooms").val();
+                    let firstName = response.first_name || "Guest";
+                    let lastName = response.last_name || "User";
+                    let description = "การจองเต็นท์ผ่านระบบ";
+                    let paymentMethod = "โอนเงิน";
 
-    let bookingButtons = document.querySelectorAll(".booking-button, .booking-tent-button");
+                    if (!checkinDate || !checkoutDate) {
+                        alert("กรุณากรอกวันที่เข้าพักและวันที่ออกจากที่พัก");
+                        return;
+                    }
 
-bookingButtons.forEach(button => {
-    button.addEventListener("click", function () {
-        window.location.href = "payment.php"; // เมื่อคลิกจะเปลี่ยนหน้าไปยัง payment.php
-    });
-});
-});
-
-</script>
+                    $.ajax({
+                        url: "insert_booking.php", // ไฟล์สำหรับบันทึกข้อมูลการจองเต็นท์
+                        method: "POST",
+                        data: {
+                            first_name: firstName,
+                            last_name: lastName,
+                            checkin_date: checkinDate,
+                            checkout_date: checkoutDate,
+                            room_number: roomNumber,
+                            room_type: roomType,
+                            guest_count: guestCount,
+                            room_count: roomCount,
+                            price: price,
+                            description: description,
+                            payment_method: paymentMethod
+                        },
+                        dataType: "json",
+                        success: function(response) {
+                            if (response.status === "success") {
+                                window.location.href =
+                                    `payment.php?booking_id=${response.booking_id}`;
+                            } else {
+                                alert("เกิดข้อผิดพลาดในการจอง: " + response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error:", xhr.responseText);
+                            alert("เกิดข้อผิดพลาด: " + xhr.responseText);
+                        }
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error:", xhr.responseText);
+                alert("เกิดข้อผิดพลาด: " + xhr.responseText);
+            }
+        });
+    }
+    </script>
 </body>
 
 </html>

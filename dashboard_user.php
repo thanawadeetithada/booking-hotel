@@ -18,7 +18,6 @@ $result = $conn->query($sql);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
-    /* ปรับแต่ง UI */
     body {
         font-family: 'Arial', sans-serif;
 
@@ -28,9 +27,6 @@ $result = $conn->query($sql);
     }
 
     .card {
-        /* display: flex;
-            justify-content: center;
-            align-items: center; */
         padding: 30px;
         border-radius: 15px;
         box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
@@ -154,9 +150,36 @@ $result = $conn->query($sql);
 </head>
 
 <body>
-    <div class="navbar navbar-dark bg-dark justify-content-end">
-        <div class="nav-item d-flex">
-            <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
+    <nav class="navbar navbar-dark bg-dark px-3">
+        <div class="d-flex w-100 justify-content-between align-items-center">
+            <i class="fa-solid fa-bars text-white" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
+                style="cursor: pointer;"></i>
+            <div class="nav-item">
+                <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarMenu">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">รายการ</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="list-unstyled">
+                <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-regular fa-money-bill-1"></i> ข้อมูลกำหนดราคาห้องพัก</a></li>
+                <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-bed"></i> ข้อมูลห้องพัก</a></li>
+                <li><a href="dashboard_user.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-user"></i> ข้อมูลลูกค้า</a></li>
+                <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-suitcase"></i> ข้อมูลการจองห้องพัก</a></li>
+                <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+            </ul>
         </div>
     </div>
 

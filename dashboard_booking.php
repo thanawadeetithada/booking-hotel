@@ -2,25 +2,30 @@
 include 'db.php';
 
 $sql = "SELECT 
-            b.booking_id,
-            u.first_name,
-            u.last_name,
+            b.invoice_id,
+            b.invoice_number,
+            b.first_name,
+            b.last_name,
             b.checkin_date,
             b.checkout_date,
-            r.room_number,
-            r.type,
-            r.price,
-            r.description,
+            b.room_number,
+            b.room_type,
+            b.guest_count,
+            b.room_count,
+            b.price,
+            b.description,
             b.payment_method,
+            b.status_payment,
             b.payment_slip,
-            b.status_payment
-        FROM bookings b
-        JOIN users u ON b.user_id = u.user_id
-        JOIN rooms r ON b.room_id = r.room_id
-        ORDER BY b.booking_id DESC";
+            b.total_amount,
+            b.paid_amount
+        FROM invoice b
+        ORDER BY b.invoice_id DESC";
+$slip_path = !empty($row['payment_slip']) ? "uploads/{$row['payment_slip']}" : "";
 
 $result = $conn->query($sql);
 ?>
+
 <!DOCTYPE html>
 <html lang="th">
 
@@ -91,31 +96,6 @@ $result = $conn->query($sql);
         height: fit-content;
         width: 50%;
     }
-/* 
-    .table th:nth-child(4),
-    .table td:nth-child(4) {
-        width: 17%;
-    }
-
-    .table th:nth-child(5),
-    .table td:nth-child(5) {
-        width: 15%;
-    }
-
-    .table th:nth-child(6),
-    .table td:nth-child(6) {
-        width: 15%;
-    }
-
-    .table th:nth-child(7),
-    .table td:nth-child(7) {
-        width: 13%;
-    }
-
-    .table td:nth-child(9) {
-        text-align: center;
-        vertical-align: middle;
-    } */
 
     .btn-action {
         display: flex;
@@ -166,9 +146,36 @@ $result = $conn->query($sql);
 </head>
 
 <body>
-    <div class="navbar navbar-dark bg-dark justify-content-end">
-        <div class="nav-item d-flex">
-            <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
+    <nav class="navbar navbar-dark bg-dark px-3">
+        <div class="d-flex w-100 justify-content-between align-items-center">
+            <i class="fa-solid fa-bars text-white" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
+                style="cursor: pointer;"></i>
+            <div class="nav-item">
+                <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarMenu">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">รายการ</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="list-unstyled">
+                <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-regular fa-money-bill-1"></i> ข้อมูลกำหนดราคาห้องพัก</a></li>
+                <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-bed"></i> ข้อมูลห้องพัก</a></li>
+                <li><a href="dashboard_user.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-user"></i> ข้อมูลลูกค้า</a></li>
+                <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-suitcase"></i> ข้อมูลการจองห้องพัก</a></li>
+                <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
+                            class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+            </ul>
         </div>
     </div>
 
@@ -196,7 +203,10 @@ $result = $conn->query($sql);
                         <th>วันที่เช็คเอ้า</th>
                         <th>เลขห้อง</th>
                         <th>ประเภท</th>
+                        <th>จำนวนผู้เข้าพัก</th>
+                        <th>จำนวนห้องพัก</th>
                         <th>ราคา</th>
+                        <th>ราคาทั้งหมด</th>
                         <th>รายละเอียด</th>
                         <th>รูปแบบการชำระเงิน</th>
                         <th>สถานะการจ่ายเงิน</th>
@@ -208,53 +218,81 @@ $result = $conn->query($sql);
                     <?php
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
+            $slip_path = "uploads/{$row['payment_slip']}";
+
             echo "<tr>
                 <td>{$row['first_name']} {$row['last_name']}</td>
                 <td>{$row['checkin_date']}</td>
                 <td>{$row['checkout_date']}</td>
                 <td>{$row['room_number']}</td>
-                <td>{$row['type']}</td>
+                <td>{$row['room_type']}</td>
+                <td>{$row['guest_count']}</td>
+                <td>{$row['room_count']}</td>
                 <td>{$row['price']}</td>
+                <td>{$row['total_amount']}</td>
                 <td>{$row['description']}</td>
                 <td>{$row['payment_method']}</td>
-                <td>{$row['status_payment']}</td>";
+                <td>";
+
+                if ($row['status_payment'] == 'paid') {
+                    echo "<span class='badge bg-success'>ชำระแล้ว</span>";
+                } elseif ($row['status_payment'] == 'pending') {
+                    echo "<span class='badge bg-warning text-dark'>รอชำระ</span>";
+                } else {
+                    echo "<span class='badge bg-secondary'>ยกเลิก</span>";
+                }
+
+                echo "</td>";
 
             // แสดงรูปสลิปการชำระเงิน
             echo "<td>";
             if (!empty($row['payment_slip'])) {
-                echo "<a href='{$row['payment_slip']}' target='_blank'>
-                        <img src='{$row['payment_slip']}' alt='Slip' width='80px'>
-                      </a>";
-            } else {
-                echo "ไม่มีสลิป";
-            }
-            echo "</td>";
+                echo "<a href='{$slip_path}' target='_blank'>
+<img src='<?php echo $slip_path; ?>' onerror='this.onerror=null; this.src='no-image.png';' alt='Slip' width='80px'
+                    style='border-radius: 5px; border: 1px solid #ddd;'>
+                    </a>";
+                    } else {
+                    echo "<span class='text-muted'>ไม่มีสลิป</span>";
+                    }
+                    echo "</td>";
 
-            // ปุ่มแก้ไขและลบ
-            echo "<td class='btn-action1'>
-                    <a href='edit_booking.php?booking_id={$row['booking_id']}' class='btn btn-warning btn-sm'>
-                        <i class='fa-solid fa-pencil'></i>
-                    </a>
-                    &nbsp;&nbsp;
-                    <a href='#' class='btn btn-danger btn-sm delete-btn' data-id='{$row['booking_id']}'>
-                        <i class='fa-regular fa-trash-can'></i>
-                    </a>
-                  </td>
-            </tr>";
-        }
-    } else {
-        echo "<tr><td colspan='11' class='text-center'>ไม่มีข้อมูลการจอง</td></tr>";
-    }
-    $conn->close();
-    ?>
+                    // ปุ่มจัดการ (แก้ไข, ดูใบเสร็จ, ลบ)
+                    echo "<td class='btn-action1'>
+                        <a href='edit_booking.php?invoice_id={$row[' invoice_id']}' class='btn btn-warning btn-sm'>
+                            <i class='fa-solid fa-pencil'></i>
+                        </a>
+                        &nbsp;&nbsp;
+                        <a href='receipt_booking.php?invoice_id={$row[' invoice_id']}' class='btn btn-primary btn-sm'>
+                            <i class='fa-solid fa-file-invoice-dollar'></i>
+                        </a>
+                        &nbsp;&nbsp;
+                        <a href='#' class='btn btn-danger btn-sm delete-btn' data-id='{$row[' invoice_id']}'>
+                            <i class='fa-regular fa-trash-can'></i>
+                        </a>
+                    </td>
+                    </tr>";
+                    }
+                    } else {
+                    echo "<tr>
+                        <td colspan='13' class='text-center'>ไม่มีข้อมูลการจอง</td>
+                    </tr>";
+                    }
+                    $conn->close();
+                    ?>
                 </tbody>
-
             </table>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
     $(document).ready(function() {
+        $(".search-name").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("table tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+
         $(".delete-btn").on("click", function(e) {
             e.preventDefault();
             var id = $(this).data("id");

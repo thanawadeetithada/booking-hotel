@@ -11,6 +11,7 @@ session_start(); // เริ่ม session
     <title>Pha Chom Dao Resort</title>
     <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
     /* ตั้งค่าพื้นฐาน */
@@ -214,11 +215,13 @@ session_start(); // เริ่ม session
     <header class="hero">
         <!-- Navigation Bar -->
         <nav class="navbar">
-            <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
+        <a class="nav-link" href="logout.php"><img class="logo-img" src="bg/logo.png" alt="ผาชมดาว"></a>
+            
             <ul class="nav-links">
                 <li><a href="index.php">Home</a></li>
                 <li><a href="service.php">Services</a></li>
                 <li><a href="contact.php">Contact</a></li>
+                <li><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
             </ul>
         </nav>
         <div class="overlay"></div>

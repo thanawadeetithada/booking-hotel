@@ -39,8 +39,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
+    .chat-container {
+        max-width: 600px;
+        margin: auto;
+        height: 350px;
+        overflow-y: auto;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message-wrapper {
+        display: flex;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .message {
+        max-width: 75%;
+        padding: 10px;
+        border-radius: 15px;
+        word-wrap: break-word;
+    }
+
+    .message.user {
+        background-color: white;
+        color: black;
+        justify-content: flex-end;
+        border: 1px solid #ccc;
+    }
+
+    .message.admin {
+        background-color: #0d6efd;
+        color: white;
+        justify-content: flex-start;
+    }
+
+    .user-message {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .admin-message {
+        display: flex;
+        justify-content: flex-start;
+    }
+
     .contact-section {
         display: flex;
         justify-content: space-around;
@@ -83,7 +134,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     /* Google Map */
     .map iframe {
-        width: 100%;
         height: 450px;
     }
 
@@ -321,11 +371,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         max-width: 500px;
         /* จำกัดความกว้าง */
         background: white;
-        padding: 30px;
+        padding: 30px 30px 20px 30px;
         /* เพิ่ม padding ให้ช่องห่างจากขอบ */
         border-radius: 10px;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         text-align: center;
+        max-height: 60vh;
+
     }
 
     .contact-form h2 {
@@ -346,6 +398,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         font-size: 1rem;
         box-sizing: border-box;
         /* ป้องกันขนาดล้น */
+        height: fit-content;
     }
 
     .contact-form textarea {
@@ -356,14 +409,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     .contact-form button {
-        width: 100%;
-        padding: 12px;
+        width: 20%;
         background: #ffd936;
         border: none;
         font-size: 1.2rem;
         cursor: pointer;
         border-radius: 8px;
         transition: 0.3s;
+        margin: 0;
+        margin-bottom: 15px;
     }
 
     .contact-form button:hover {
@@ -377,17 +431,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .social-icons {
         font-size: 1.5rem;
     }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .logo-container i {
+        margin-bottom: 20px;
+        font-size: 25px;
+        margin-right: 10px;
+    }
+
+    .blur {
+        filter: blur(3px);
+        opacity: 0.6;
+        pointer-events: none;
+        user-select: none;
+    }
+
+
+    .text-login {
+        color: red;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+
+    .text-login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
     </style>
 </head>
 
 <body>
     <header class="hero">
         <nav class="navbar">
-            <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
+            <div class="logo-container">
+                <i class="fa-solid fa-arrow-left" onclick="goBack()"></i>
+                <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
+            </div>
             <ul class="nav-links">
                 <li><a href="index.php">Home</a></li>
                 <li><a href="service.php">Services</a></li>
                 <li><a href="contact.php">Contact</a></li>
+                <li><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
             </ul>
         </nav>
         <div class="overlay"></div>
@@ -422,12 +512,26 @@ if (isset($_SESSION['error'])) {
 
             <div class="contact-form">
                 <h2>Let's get in touch</h2>
-                <form action="#" method="POST">
-                    <input type="text" name="name" placeholder="Your Name" required>
-                    <input type="email" name="email" placeholder="Your Email" required>
-                    <textarea name="message" placeholder="Message" required></textarea>
-                    <button type="submit">Send Message</button>
-                </form>
+                <div class="container mt-4">
+                    <div class="chat-container <?php echo isset($_SESSION['user_id']) ? '' : 'blur'; ?>" id="chatBox">
+                    </div>
+
+                    <div class="d-flex mt-3">
+                        <input type="hidden" id="user_id"
+                            value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
+
+                        <?php if (isset($_SESSION['user_id'])) : ?>
+                        <input type="text" class="form-control me-2" id="chatInput" placeholder="พิมพ์ข้อความ...">
+                        <button class="btn btn-primary" onclick="sendMessage()">ส่ง</button>
+                        <?php else : ?>
+                        <div class="text-login-container">
+                            <p class="text-login" onclick="window.location.href='login.php'">
+                                กรุณาเข้าสู่ระบบเพื่อส่งข้อความ
+                            </p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
             </div>
 
         </section>
@@ -447,8 +551,16 @@ if (isset($_SESSION['error'])) {
 
     <!-- Google Map Section -->
     <section class="map">
-        <img src="img/loca.jpg" alt="วิวภูเขา">
-    </section>
+    <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d61904.84892639381!2d100.8276970622087!3d16.8951222984756!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xecb332e4401bdffd!2z4LiE4LiT4Liy4LiZ4Liq4Li04LiX4LiiIOC4quC4hOC4q-C4seC4mSDguJXguLPguIHguK3guIfguLTguKrguJvguLLguKXguYzguLLguJQ!5e0!3m2!1sth!2sth!4v1617861290194!5m2!1sth!2sth" 
+        width="80%" 
+        height="450" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy">
+    </iframe>
+</section>
+
 
     <!-- Footer -->
     <footer>
@@ -462,6 +574,41 @@ if (isset($_SESSION['error'])) {
             <img src="bg/logo.png" alt="โลโก้ผาชมดาว">
         </div>
     </footer>
+    <script>
+    function goBack() {
+        window.history.back();
+    }
+
+    function loadMessages() {
+        $.ajax({
+            url: "load_messages.php",
+            method: "GET",
+            success: function(data) {
+                $("#chatBox").html(data);
+                $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+            }
+        });
+    }
+
+    function sendMessage() {
+        let message = $("#chatInput").val();
+        let userId = $("#user_id").val();
+
+        if (message.trim() === "") return;
+
+        $.post("send_message.php", {
+            sender: "user",
+            user_id: userId,
+            message: message
+        }, function() {
+            $("#chatInput").val("");
+            loadMessages();
+        });
+    }
+
+    setInterval(loadMessages, 1000);
+    $(document).ready(loadMessages);
+    </script>
 
 </body>
 
