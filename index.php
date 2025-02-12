@@ -221,7 +221,9 @@ session_start(); // เริ่ม session
                 <li><a href="index.php">Home</a></li>
                 <li><a href="service.php">Services</a></li>
                 <li><a href="contact.php">Contact</a></li>
+                <?php if (isset($_SESSION['user_id'])): ?>
                 <li><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
+                <?php endif; ?>
             </ul>
         </nav>
         <div class="overlay"></div>
