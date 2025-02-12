@@ -9,7 +9,6 @@ $endDateFormatted = date('Y-m-d', strtotime($endDate));
 
 $searchPerformed = isset($_POST['startDate']) && isset($_POST['endDate']);
 
-// ✅ ดึงข้อมูล **ห้องพัก (rooms)**
 $sql_rooms = "SELECT r.room_code, r.room_number, r.price, r.type, r.description, r.image_path
         FROM rooms r
         WHERE r.isshow = 1
@@ -32,7 +31,6 @@ if ($result_rooms->num_rows > 0) {
     }
 }
 
-// ✅ ดึงข้อมูล **เต็นท์ (tents)**
 $sql_tents = "SELECT r.room_number, r.price, r.type, r.description, r.image_path
         FROM rooms r
         WHERE r.isshow = 1 AND r.type = 'เต็นท์'";
@@ -46,7 +44,6 @@ if ($result_tents->num_rows > 0) {
     }
 }
 
-// ✅ ดึงข้อมูลเต็นท์ที่ถูกจองจาก `invoice`
 $bookedTents = [];
 if ($searchPerformed) {
     $sql_tent_booking = "SELECT room_number FROM invoice
@@ -77,11 +74,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>จองห้องพัก</title>
-
-    <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-
-    <!-- jQuery & jQuery UI -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -212,11 +205,9 @@ $conn->close();
         color: black;
     }
 
-    /* /////card hote; */
     .hotel-listing {
         display: flex;
         justify-content: center;
-        /* margin: 20px 0; */
     }
 
     .hotel-card {
@@ -281,7 +272,6 @@ $conn->close();
         flex-direction: column;
         align-items: center;
         gap: 20px;
-        /* ระยะห่างระหว่างแถว */
         padding: 0 20px 20px 20px;
     }
 
@@ -294,11 +284,9 @@ $conn->close();
         width: auto;
     }
 
-    /* /////////////tent */
     .hotel-icon {
         display: flex;
         flex-wrap: wrap;
-        /* จัดให้ไอคอนไม่ติดกันเกินไป */
         justify-content: center;
         gap: 20px;
     }
@@ -312,21 +300,17 @@ $conn->close();
 
     .tent-icon {
         font-size: 3rem;
-        /* เพิ่มขนาดไอคอนให้ใหญ่ขึ้น */
         color: blue;
-        /* สีเริ่มต้น */
     }
 
     .tent-icon.booked {
         color: gray !important;
-        /* เปลี่ยนสีถ้าถูกจอง */
         opacity: 0.5;
         cursor: not-allowed;
     }
 
     .tent-number {
         margin-top: 5px;
-        /* ขยับตัวเลขลงมาให้อยู่ด้านล่างไอคอน */
         font-size: 1.2rem;
         font-weight: bold;
         color: black;
@@ -424,7 +408,6 @@ $conn->close();
 <body>
 
     <header class="hero">
-        <!-- Navigation Bar -->
         <nav class="navbar">
             <div class="logo-container">
                 <i class="fa-solid fa-arrow-left" onclick="goBack()"></i>
@@ -445,20 +428,17 @@ $conn->close();
     <div class="container">
         <div class="booking-container">
             <h3 class="text-center mb-4">📅 จองห้องพักของคุณ</h3>
-
             <form action="" method="POST">
-                <!-- Date Picker -->
                 <div class="mb-3">
                     <label class="form-label">📅 วันที่เข้าพัก - วันที่ออก</label>
                     <div class="input-group">
-                        <input type="text" id="startDate" name="startDate" class="form-control" placeholder="เช็คอิน"
+                        <input type="text" id="startDate" autocomplete="off" name="startDate" class="form-control" placeholder="เช็คอิน"
                             value="<?= isset($_POST['startDate']) ? htmlspecialchars($_POST['startDate']) : '' ?>">
                         <span class="input-group-text">—</span>
-                        <input type="text" id="endDate" name="endDate" class="form-control" placeholder="เช็คเอาท์"
+                        <input type="text" id="endDate" autocomplete="off" name="endDate" class="form-control" placeholder="เช็คเอาท์"
                             value="<?= isset($_POST['endDate']) ? htmlspecialchars($_POST['endDate']) : '' ?>">
                     </div>
                 </div>
-                <!-- จำนวนผู้ใหญ่ และ จำนวนห้อง (บรรทัดเดียวกัน) -->
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label">👨‍👩‍👧‍👦 จำนวนผู้ใหญ่</label>
@@ -483,8 +463,6 @@ $conn->close();
                         </div>
                     </div>
                 </div>
-
-
                 <div class="btn-sesrch-book">
                     <button type="submit" id="searchButton" class="btn btn-custom">🔍 ค้นหา</button>
                 </div>
@@ -553,7 +531,7 @@ $conn->close();
                     <div class="hotel-icon">
                         <?php foreach ($tents as $tent): 
                 $roomNumber = $tent['room_number'];
-                $isBooked = in_array($roomNumber, $bookedTents); // ตรวจสอบว่าถูกจองหรือไม่
+                $isBooked = in_array($roomNumber, $bookedTents);
             ?>
                         <div class="tent-box">
                             <i class="fa-solid fa-tent tent-icon <?= $isBooked ? 'booked' : '' ?>"></i>
@@ -603,8 +581,6 @@ $conn->close();
         </div>
     </section>
 
-
-    <!-- Footer -->
     <footer>
         <div></div>
         <nav style="font-size: 25px;">
@@ -617,17 +593,12 @@ $conn->close();
         </div>
     </footer>
 
-
-    <!-- JavaScript -->
     <script>
     $(document).ready(function() {
-        // Datepicker
         $("#startDate, #endDate").datepicker({
             dateFormat: "dd M yy",
             minDate: 0
         });
-
-        // ถ้ามีค่าถูกส่งมาแล้ว ให้ Datepicker ตั้งค่าตามที่เคยเลือกไว้
         if ($("#startDate").val()) {
             $("#startDate").datepicker("setDate", new Date($("#startDate").val()));
         }
@@ -639,8 +610,6 @@ $conn->close();
             var minDate = $(this).datepicker("getDate");
             $("#endDate").datepicker("option", "minDate", minDate);
         });
-
-        // ปุ่มเพิ่ม/ลดจำนวน
         $(".plus-btn").click(function() {
             var target = $(this).data("target");
             var input = $("#" + target);
@@ -655,19 +624,18 @@ $conn->close();
             if (value > 0) input.val(value);
         });
 
-        // ตรวจสอบค่าก่อนส่งฟอร์ม
         $("form").on("submit", function(event) {
             var startDate = $("#startDate").val();
             var endDate = $("#endDate").val();
 
             if (!startDate || !endDate) {
                 alert("กรุณากรอกวันที่เข้าพัก และวันที่ออกให้ครบถ้วน");
-                event.preventDefault(); // ป้องกันการ submit ฟอร์ม
+                event.preventDefault();
             }
         });
         $(".tent-icon").click(function() {
             if (!$(this).hasClass("booked")) {
-                $(this).toggleClass("selected"); // เพิ่มหรือเอาคลาสออกเมื่อกด
+                $(this).toggleClass("selected");
             }
         });
     });
@@ -736,12 +704,12 @@ $conn->close();
 
     function bookTent(roomNumber, roomType, price) {
         $.ajax({
-            url: "check_login.php", // ตรวจสอบว่าผู้ใช้ล็อกอินหรือยัง
+            url: "check_login.php",
             method: "GET",
             dataType: "json",
             success: function(response) {
                 if (response.status === "not_logged_in") {
-                    window.location.href = "login.php"; // ถ้าไม่ได้ล็อกอิน ให้ไปหน้า login
+                    window.location.href = "login.php";
                 } else if (response.status === "logged_in") {
                     let checkinDate = $("#startDate").val();
                     let checkoutDate = $("#endDate").val();
@@ -758,7 +726,7 @@ $conn->close();
                     }
 
                     $.ajax({
-                        url: "insert_booking.php", // ไฟล์สำหรับบันทึกข้อมูลการจองเต็นท์
+                        url: "insert_booking.php",
                         method: "POST",
                         data: {
                             first_name: firstName,
