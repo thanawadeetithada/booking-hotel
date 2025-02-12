@@ -164,7 +164,7 @@ $result = $conn->query($sql);
 
     <div class="card">
         <div class="header-card">
-            <h3 class="text-left">ข้อมูลการจอง</h3>
+            <h3 class="text-left">ข้อความ</h3>
             <div class="search-add">
                 <div class="tab-func">
                 </div>

@@ -1,54 +1,63 @@
 <?php
-require 'db.php'; // ไฟล์เชื่อมต่อฐานข้อมูล
+require 'db.php';
+
+$error_message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // รับค่าจากฟอร์ม
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $phone = $_POST['phone'];
     $email = $_POST['email'];
     $id_card = $_POST['id_card'];
     $birthdate = $_POST['birthdate'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // เข้ารหัสรหัสผ่าน
-    $userrole = 'user'; // กำหนดค่าเริ่มต้นเป็น user
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $userrole = 'user';
 
-    // ตรวจสอบว่า email มีอยู่แล้วหรือไม่
-    $check_email_sql = "SELECT user_id FROM users WHERE email = ?";
-    if ($stmt = $conn->prepare($check_email_sql)) {
-        $stmt->bind_param("s", $email);
+    $check_duplicate_sql = "SELECT email, phone, id_card FROM users WHERE email = ? OR phone = ? OR id_card = ?";
+    
+    if ($stmt = $conn->prepare($check_duplicate_sql)) {
+        $stmt->bind_param("sss", $email, $phone, $id_card);
         $stmt->execute();
         $stmt->store_result();
         
         if ($stmt->num_rows > 0) {
-            // ถ้า Email มีอยู่แล้ว
-            echo "<script>alert('อีเมลนี้ถูกใช้ไปแล้ว กรุณาใช้อีเมลอื่น'); window.location.href='register.php';</script>";
-            exit();
+            $stmt->bind_result($existing_email, $existing_phone, $existing_id_card);
+            $stmt->fetch();
+
+            if ($email === $existing_email) {
+                $error_message = "อีเมลนี้ถูกใช้ไปแล้ว กรุณาใช้อีเมลอื่น";
+            } elseif ($phone === $existing_phone) {
+                $error_message = "เบอร์โทรศัพท์นี้ถูกใช้ไปแล้ว กรุณาใช้เบอร์โทรศัพท์อื่น";
+            } elseif ($id_card === $existing_id_card) {
+                $error_message = "เลขบัตรประชาชนนี้ถูกใช้ไปแล้ว กรุณาใช้เลขบัตรประชาชนอื่น";
+            }
         }
         $stmt->close();
     }
 
-    // SQL สำหรับ Insert ข้อมูล
-    $sql = "INSERT INTO users (first_name, last_name, phone, email, id_card, birthdate, password, userrole, created_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+    if (empty($error_message)) {
+        $sql = "INSERT INTO users (first_name, last_name, phone, email, id_card, birthdate, password, userrole, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
-    if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("ssssssss", $first_name, $last_name, $phone, $email, $id_card, $birthdate, $password, $userrole);
-        
-        if ($stmt->execute()) {
-            echo "<script>alert('สมัครสมาชิกสำเร็จ!'); window.location.href='login.php';</script>";
+        if ($stmt = $conn->prepare($sql)) {
+            $stmt->bind_param("ssssssss", $first_name, $last_name, $phone, $email, $id_card, $birthdate, $password, $userrole);
+            
+            if ($stmt->execute()) {
+                echo "<script>alert('สมัครสมาชิกสำเร็จ!'); window.location.href='login.php';</script>";
+                exit();
+            } else {
+                $error_message = "เกิดข้อผิดพลาด: " . $stmt->error;
+            }
+            
+            $stmt->close();
         } else {
-            echo "<script>alert('เกิดข้อผิดพลาด: " . $stmt->error . "');</script>";
+            $error_message = "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL";
         }
-        
-        $stmt->close();
-    } else {
-        echo "<script>alert('เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL');</script>";
     }
     
     $conn->close();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="th">
@@ -120,30 +129,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     a {
         text-align: center;
     }
+
+    .alert {
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h2>สมัครสมาชิก</h2>
-        <form action="register.php" method="POST">
+
+        <?php if (!empty($error_message)): ?>
+        <div class="alert alert-danger" role="alert">
+            <?php echo $error_message; ?>
+        </div>
+        <?php endif; ?>
+
+        <form action="" method="POST">
             <label for="first_name">ชื่อ</label>
-            <input type="text" id="first_name" name="first_name" placeholder="ชื่อ" required>
+            <input type="text" id="first_name" name="first_name" placeholder="ชื่อ" required
+                value="<?php echo isset($_POST['first_name']) ? htmlspecialchars($_POST['first_name']) : ''; ?>">
 
             <label for="last_name">นามสกุล</label>
-            <input type="text" id="last_name" name="last_name" placeholder="นามสกุล" required>
+            <input type="text" id="last_name" name="last_name" placeholder="นามสกุล" required
+                value="<?php echo isset($_POST['last_name']) ? htmlspecialchars($_POST['last_name']) : ''; ?>">
 
             <label for="phone">เบอร์โทรศัพท์</label>
-            <input type="text" id="phone" name="phone" placeholder="เบอร์โทรศัพท์" required>
+            <input type="text" id="phone" name="phone" placeholder="เบอร์โทรศัพท์" required
+                value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>">
 
             <label for="email">E-mail</label>
-            <input type="email" id="email" name="email" placeholder="E-mail" required>
+            <input type="email" id="email" name="email" placeholder="E-mail" required
+                value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
 
             <label for="id_card">เลขบัตรประชาชน</label>
-            <input type="text" id="id_card" name="id_card" placeholder="เลขบัตรประชาชน" required>
+            <input type="text" id="id_card" name="id_card" placeholder="เลขบัตรประชาชน" required
+                value="<?php echo isset($_POST['id_card']) ? htmlspecialchars($_POST['id_card']) : ''; ?>">
 
             <label for="birthdate">วันเกิด</label>
-            <input type="date" id="birthdate" name="birthdate" required onfocus="this.showPicker()">
+            <input type="date" id="birthdate" name="birthdate" required
+                value="<?php echo isset($_POST['birthdate']) ? htmlspecialchars($_POST['birthdate']) : ''; ?>">
 
             <label for="password">รหัสผ่าน</label>
             <input type="password" id="password" name="password" placeholder="รหัสผ่าน" required>
@@ -151,8 +187,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit">สมัครสมาชิก</button>
             <br>
             <a href="login.php">เข้าสู่ระบบ</a>
-
         </form>
+
     </div>
 </body>
 
