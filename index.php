@@ -1,5 +1,5 @@
 <?php
-session_start(); // เริ่ม session
+session_start();
 ?>
 
 <!DOCTYPE html>
@@ -14,7 +14,6 @@ session_start(); // เริ่ม session
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
-    /* ตั้งค่าพื้นฐาน */
     body {
         font-family: 'Prompt', sans-serif;
         margin: 0;
@@ -73,7 +72,6 @@ session_start(); // เริ่ม session
         margin-top: 40vh;
     }
 
-    /* Gallery Section */
     .gallery {
         display: flex;
         justify-content: center;
@@ -91,7 +89,6 @@ session_start(); // เริ่ม session
         color: #535d4c;
     }
 
-    /* Review Section */
     .review {
         display: flex;
         justify-content: center;
@@ -109,7 +106,6 @@ session_start(); // เริ่ม session
         color: #535d4c;
     }
 
-    /* News Section */
     .news {
         text-align: center;
         padding: 40px;
@@ -213,10 +209,9 @@ session_start(); // เริ่ม session
 
 <body>
     <header class="hero">
-        <!-- Navigation Bar -->
         <nav class="navbar">
-        <a class="nav-link" href="logout.php"><img class="logo-img" src="bg/logo.png" alt="ผาชมดาว"></a>
-            
+            <a class="nav-link" href="logout.php"><img class="logo-img" src="bg/logo.png" alt="ผาชมดาว"></a>
+
             <ul class="nav-links">
                 <li><a href="index.php">Home</a></li>
                 <li><a href="service.php">Services</a></li>
@@ -231,12 +226,10 @@ session_start(); // เริ่ม session
         <p style="margin-top: 150px"></p>
         <br>
         <?php if (!isset($_SESSION['user_id'])): ?>
-            <a href="login.php" class="btn">เข้าสู่ระบบ</a>
+        <a href="login.php" class="btn">เข้าสู่ระบบ</a>
         <?php endif; ?>
     </header>
 
-
-    <!-- Gallery Section -->
     <section class="gallery">
         <div class="gallery-item"><img src="img/img1.jpg" alt="วิวทะเลหมอก">
             <p>ตั้งใจมาดูพระอาทิตย์ขึ้นแต่ดันลุกไม่ขึ้นซะนี่ !!!</p>
@@ -249,7 +242,6 @@ session_start(); // เริ่ม session
         </div>
     </section>
 
-    <!-- Review Section -->
     <section class="review">
         <div class="review-item"><img src="review/review1.jpg" alt="วิวทะเลหมอก">
         </div>
@@ -267,7 +259,6 @@ session_start(); // เริ่ม session
         </div>
     </section>
 
-    <!-- News Section -->
     <section class="news">
         <h2>ข่าวสารประชาสัมพันธ์</h2>
         <div class="news-item">
@@ -275,7 +266,6 @@ session_start(); // เริ่ม session
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <div></div>
         <nav style="font-size: 25px;">
