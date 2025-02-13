@@ -547,7 +547,8 @@ if (!isset($_SESSION['user_id'])) {
                 $isBooked = in_array($roomNumber, $bookedTents);
             ?>
                         <div class="tent-box">
-                            <i class="fa-solid fa-tent tent-icon <?= $isBooked ? 'booked' : '' ?>"></i>
+                            <i class="fa-solid fa-tent tent-icon <?= $isBooked ? 'booked' : '' ?>"
+                                data-room-number="<?= htmlspecialchars($roomNumber) ?>"></i>
                             <span class="tent-number"><?= $roomNumber ?></span>
                         </div>
                         <?php endforeach; ?>
@@ -555,12 +556,12 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
 
                 <div class="btn-reserve">
-                    <button type="button" class="btn btn-custom"
-                        onclick="bookTent('<?= htmlspecialchars($tent['room_number']) ?>', '<?= htmlspecialchars($tent['type']) ?>', '<?= htmlspecialchars($tent['price']) ?>')">
+                    <button type="button" id="bookTentBtn" class="btn btn-custom"
+                        data-price="<?= htmlspecialchars($tent['price']) ?>">
                         จองเต็นท์
                     </button>
-
                 </div>
+
             </div>
         </div>
         <?php 
@@ -651,7 +652,17 @@ if (!isset($_SESSION['user_id'])) {
         });
         $(".tent-icon").click(function() {
             if (!$(this).hasClass("booked")) {
+                $(".tent-icon").removeClass("selected");
                 $(this).toggleClass("selected");
+
+                let roomNumber = $(this).attr("data-room-number");
+                console.log("Selected Tent Room Number:", roomNumber);
+
+                $("#bookTentBtn").off("click").on("click", function() {
+                    let tentType = "เต็นท์";
+                    let tentPrice = $(this).data("price");
+                    bookTent(roomNumber, tentType, tentPrice);
+                });
             }
         });
     });
@@ -692,8 +703,6 @@ if (!isset($_SESSION['user_id'])) {
                         description: description,
                         payment_method: paymentMethod
                     };
-
-                    console.log("Data being sent to insert_booking.php:", data); // เช็คข้อมูลก่อนส่ง
 
                     $.ajax({
                         url: "insert_booking.php",
@@ -746,22 +755,26 @@ if (!isset($_SESSION['user_id'])) {
                         return;
                     }
 
+                    let data = {
+                        first_name: firstName,
+                        last_name: lastName,
+                        checkin_date: checkinDate,
+                        checkout_date: checkoutDate,
+                        room_number: roomNumber,
+                        room_type: roomType,
+                        guest_count: guestCount,
+                        room_count: roomCount,
+                        price: price,
+                        description: description,
+                        payment_method: paymentMethod
+                    };
+
+                    console.log("Data being sent to insert_booking.php:", data);
+
                     $.ajax({
                         url: "insert_booking.php",
                         method: "POST",
-                        data: {
-                            first_name: firstName,
-                            last_name: lastName,
-                            checkin_date: checkinDate,
-                            checkout_date: checkoutDate,
-                            room_number: roomNumber,
-                            room_type: roomType,
-                            guest_count: guestCount,
-                            room_count: roomCount,
-                            price: price,
-                            description: description,
-                            payment_method: paymentMethod
-                        },
+                        data: data,
                         dataType: "json",
                         success: function(response) {
                             if (response.status === "success") {
