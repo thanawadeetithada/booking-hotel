@@ -84,6 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 400px;
+        margin: 30px;
     }
 
     h2 {

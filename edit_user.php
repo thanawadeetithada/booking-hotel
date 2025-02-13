@@ -150,13 +150,13 @@ $row = $result->fetch_assoc();
                 <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
                             class="fa-solid fa-chart-line"></i> Dashboard</a></li>
                 <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-regular fa-money-bill-1"></i> ข้อมูลกำหนดราคาห้องพัก</a></li>
+                            class="fa-regular fa-money-bill-1"></i> ตั้งค่าราคาห้องพัก</a></li>
                 <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-bed"></i> ข้อมูลห้องพัก</a></li>
+                            class="fa-solid fa-bed"></i> รายละเอียดห้องพัก</a></li>
                 <li><a href="dashboard_user.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-user"></i> ข้อมูลลูกค้า</a></li>
+                            class="fa-solid fa-user"></i> รายชื่อลูกค้า</a></li>
                 <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-suitcase"></i> ข้อมูลการจองห้องพัก</a></li>
+                            class="fa-solid fa-suitcase"></i> สถานะการจอง</a></li>
                 <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
                             class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
             </ul>

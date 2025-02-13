@@ -92,13 +92,13 @@ if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
                 <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
                             class="fa-solid fa-chart-line"></i> Dashboard</a></li>
                 <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-regular fa-money-bill-1"></i> ข้อมูลกำหนดราคาห้องพัก</a></li>
+                            class="fa-regular fa-money-bill-1"></i> ตั้งค่าราคาห้องพัก</a></li>
                 <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-bed"></i> ข้อมูลห้องพัก</a></li>
+                            class="fa-solid fa-bed"></i> รายละเอียดห้องพัก</a></li>
                 <li><a href="dashboard_user.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-user"></i> ข้อมูลลูกค้า</a></li>
+                            class="fa-solid fa-user"></i> รายชื่อลูกค้า</a></li>
                 <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-suitcase"></i> ข้อมูลการจองห้องพัก</a></li>
+                            class="fa-solid fa-suitcase"></i> สถานะการจอง</a></li>
                 <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
                             class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
             </ul>
@@ -111,28 +111,28 @@ if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
             <div class="col-md-6 mb-3">
                 <a href="add_room.php" class="text-decoration-none">
                     <div class="card text-center p-4 text-white">
-                        <h4>ข้อมูลกำหนดราคาห้องพัก</h4>
+                        <h4>ตั้งค่าราคาห้องพัก</h4>
                     </div>
                 </a>
             </div>
             <div class="col-md-6 mb-3">
                 <a href="dashboard_room.php" class="text-decoration-none">
                     <div class="card text-center p-4  text-white">
-                        <h4>ข้อมูลห้องพัก</h4>
+                        <h4>รายละเอียดห้องพัก</h4>
                     </div>
                 </a>
             </div>
             <div class="col-md-6 mb-3">
                 <a href="dashboard_user.php" class="text-decoration-none">
                     <div class="card text-center p-4 text-white">
-                        <h4>ข้อมูลลูกค้า</h4>
+                        <h4>รายชื่อลูกค้า</h4>
                     </div>
                 </a>
             </div>
             <div class="col-md-6 mb-3">
                 <a href="dashboard_booking.php" class="text-decoration-none">
                     <div class="card text-center p-4 text-white">
-                        <h4>ข้อมูลการจองห้องพัก</h4>
+                        <h4>สถานะการจอง</h4>
                     </div>
                 </a>
             </div>

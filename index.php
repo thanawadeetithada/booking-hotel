@@ -21,176 +21,31 @@ session_start();
         background-color: #fff;
     }
 
-    .hero {
-        position: relative;
-        text-align: center;
-        color: white;
-        background: url('bg/main.jpg') center/cover no-repeat;
-        height: 90vh;
-    }
-
-    .hero .overlay {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: none;
-    }
-
-    .hero h1 {
-        font-size: 5rem;
-        z-index: 1;
-    }
-
-    .hero p {
-        font-size: 2rem;
-        z-index: 1;
-    }
-
-    .hero-img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: -1;
-    }
-
-    .logo-img {
-        width: 100px;
-        height: 100px;
-    }
-
-    .btn {
-        z-index: 1;
-        display: inline-block;
-        background: #ffd936;
-        color: black;
-        padding: 10px 20px;
-        text-decoration: none;
-        font-size: 1.5rem;
-        border-radius: 5px;
-        margin-top: 40vh;
-    }
-
-    .gallery {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        padding: 40px;
-    }
-
-    .gallery-item img {
-        width: 300px;
-        height: 250px;
-        border-radius: 10px;
-    }
-
-    .gallery-item p {
-        color: #535d4c;
-    }
-
-    .review {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        padding: 40px;
-    }
-
-    .review-item img {
-        width: 300px;
-        height: auto;
-        border-radius: 10px;
-    }
-
-    .review-item p {
-        color: #535d4c;
-    }
-
-    .news {
-        text-align: center;
-        padding: 40px;
-    }
-
-    .news-item img {
-        width: 50%;
-        border-radius: 10px;
-    }
-
-    .news-item p {
-        font-size: 1.5rem;
-    }
-
-    footer nav a {
-        color: white;
-        margin: 0 15px;
-        text-decoration: none;
-    }
-
-    footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #414678;
-        color: white;
-        text-align: center;
-        padding: 10px;
-    }
-
-    nav {
-        display: flex;
-        gap: 15px;
-    }
-
-    .logo-footer img {
-        width: 100px;
-        height: auto;
-    }
-
-    @media (max-width: 768px) {
-        .hero h1 {
-            font-size: 3rem;
-        }
-
-        .hero p {
-            font-size: 1.5rem;
-        }
-
-        .gallery {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .review-list {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .news-item img {
-            width: 90%;
-        }
-    }
-
+    /* Navbar */
     .navbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 97%;
+        padding: 10px 20px;
+        background: #414678;
+        position: fixed;
         top: 0;
         left: 0;
-        padding: 10px 20px;
+        right: 0;
         z-index: 1000;
+    }
+
+    .logo-img {
+        width: 80px;
+        height: 80px;
     }
 
     .nav-links {
         list-style: none;
         display: flex;
-        gap: 20px;
+        gap: 5px;
         margin: 0;
         padding: 0;
-    }
-
-    .nav-links li {
-        display: inline;
     }
 
     .nav-links a {
@@ -201,27 +56,137 @@ session_start();
         transition: 0.3s;
     }
 
-    .nav-links a:hover {
+    /* Hero Section */
+    .hero {
+        position: relative;
+        text-align: center;
+        color: white;
+        background: url('bg/main.jpg') center/cover no-repeat;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 80px;
+    }
+
+    .btn {
+        display: inline-block;
+        background: #ffd936;
+        color: black;
+        padding: 12px 24px;
+        font-size: 1.5rem;
         border-radius: 5px;
+        margin-top: 20px;
+        text-decoration: none;
+    }
+
+    /* Gallery & Review */
+    .gallery,
+    .review {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 40px;
+        text-align: center;
+    }
+
+    .gallery-item img,
+    .review-item img {
+        width: 300px;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .gallery-item p,
+    .review-item p {
+        color: #535d4c;
+    }
+
+    /* News Section */
+    .news {
+        text-align: center;
+        padding: 40px;
+    }
+
+    .news-item img {
+        width: 50%;
+        border-radius: 10px;
+    }
+
+    /* Footer */
+    footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #414678;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        flex-wrap: wrap;
+    }
+
+    footer nav {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-grow: 1;
+    }
+
+    footer .logo-footer {
+        display: flex;
+        justify-content: flex-end;
+        flex-shrink: 0;
+    }
+
+    footer a {
+        color: white;
+        text-decoration: none;
+        font-size: 1.2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+
+        .gallery,
+        .review {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .news-item img {
+            width: 90%;
+        }
+
+        footer {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        footer nav {
+            flex-direction: column;
+            gap: 10px;
+        }
     }
     </style>
 </head>
 
 <body>
-    <header class="hero">
-        <nav class="navbar">
-            <a class="nav-link" href="logout.php"><img class="logo-img" src="bg/logo.png" alt="ผาชมดาว"></a>
+    <nav class="navbar">
+        <a href="index.php"><img class="logo-img" src="bg/logo.png" alt="ผาชมดาว"></a>
+        <ul class="nav-links">
+            <li><a href="index.php">Home</a></li>
+            <li><a href="service.php">Services</a></li>
+            <li><a href="contact.php">Contact</a></li>
+            <?php if (isset($_SESSION['user_id'])): ?>
+            <li><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
 
-            <ul class="nav-links">
-                <li><a href="index.php">Home</a></li>
-                <li><a href="service.php">Services</a></li>
-                <li><a href="contact.php">Contact</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                <li><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-        <div class="overlay"></div>
+    <header class="hero">
         <h1></h1>
         <p style="margin-top: 150px"></p>
         <br>
@@ -231,10 +196,10 @@ session_start();
     </header>
 
     <section class="gallery">
-        <div class="gallery-item"><img src="img/img1.jpg" alt="วิวทะเลหมอก">
+        <div class="gallery-item"><img src="img/mg1.jpg" alt="วิวทะเลหมอก">
             <p>ตั้งใจมาดูพระอาทิตย์ขึ้นแต่ดันลุกไม่ขึ้นซะนี่ !!!</p>
         </div>
-        <div class="gallery-item"><img src="img/img2.jpg" alt="วิวต้นไม้ตอนเช้า">
+        <div class="gallery-item"><img src="img/img2.jpg" alt="วิวต้นไม้">
             <p>"ตอนเด็กชอบกินขนมแต่ตอนโตชอบกินลมชมวิว"</p>
         </div>
         <div class="gallery-item"><img src="img/img3.jpg" alt="พระอาทิตย์ตก">
@@ -260,24 +225,20 @@ session_start();
     </section>
 
     <section class="news">
-        <h2>ข่าวสารประชาสัมพันธ์</h2>
-        <div class="news-item">
-            <img src="img/promo.jpg" alt="โปรโมชั่น">
-        </div>
+        <h2>ข่าวสาร</h2>
+        <div class="news-item"><img src="img/promo.jpg" alt="โปรโมชั่น"></div>
     </section>
 
     <footer>
-        <div></div>
-        <nav style="font-size: 25px;">
+        <nav>
             <a href="index.php">Home</a>
             <a href="service.php">Services</a>
             <a href="contact.php">Contact</a>
         </nav>
         <div class="logo-footer">
-            <img src="bg/logo.png" alt="โลโก้ผาชมดาว">
+            <img src="bg/logo.png" alt="โลโก้" width="80">
         </div>
     </footer>
-
 </body>
 
 </html>

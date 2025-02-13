@@ -83,6 +83,7 @@ ob_end_flush();
         width: 100%;
         max-width: 400px;
         text-align: center;
+        margin: 30px;
     }
 
     h2 {
