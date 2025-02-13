@@ -1,5 +1,11 @@
 <?php
+session_start();
 include 'db.php';
+
+if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
 
 $sql = "SELECT m.id, m.user_id, u.first_name, u.last_name, u.email, MAX(m.created_at) AS created_at 
 FROM messages m

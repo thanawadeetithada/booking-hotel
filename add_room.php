@@ -2,6 +2,11 @@
 session_start();
 require 'db.php';
 
+if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $room_code = isset($_POST['room_code']) ? trim($_POST['room_code']) : '';
     $room_number = isset($_POST['room_number']) ? trim($_POST['room_number']) : '';

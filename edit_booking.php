@@ -1,5 +1,11 @@
 <?php
+session_start();
 include 'db.php';
+
+if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
 
 if (!isset($_GET['invoice_id']) || empty($_GET['invoice_id'])) {
     die("ไม่พบข้อมูลการจองที่ต้องการแก้ไข");

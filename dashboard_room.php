@@ -2,6 +2,11 @@
 session_start();
 require 'db.php';
 
+if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
+
 $sql = "SELECT room_id, room_code, room_number, price, type, description, image_path, isshow FROM rooms";
 $result = $conn->query($sql);
 ?>

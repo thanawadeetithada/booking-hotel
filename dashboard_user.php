@@ -2,6 +2,11 @@
 session_start();
 require 'db.php';
 
+if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
+
 $sql = "SELECT user_id, first_name, last_name, phone, email, id_card, birthdate, userrole FROM users";
 $result = $conn->query($sql);
 ?>

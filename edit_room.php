@@ -2,6 +2,11 @@
 session_start();
 require 'db.php';
 
+if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
+
 if (isset($_GET['room_code'])) {
     $room_code = $_GET['room_code'];
 
