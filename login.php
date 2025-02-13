@@ -34,7 +34,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($user['userrole'] == 'admin') {
                     $redirect_page = "admin_dashboard.php";
                 } else {
-                    $redirect_page = $_SESSION['redirect_to'] ?? 'index.php';
+                    if (isset($_SESSION['redirect_to']) && basename($_SESSION['redirect_to']) === "register.php") {
+                        $redirect_page = "index.php";
+                    } else {
+                        $redirect_page = $_SESSION['redirect_to'] ?? 'index.php';
+                    }
                     unset($_SESSION['redirect_to']);
                 }
 

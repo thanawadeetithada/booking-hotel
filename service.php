@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'db.php';
 
 $startDate = isset($_POST['startDate']) ? $_POST['startDate'] : null;
