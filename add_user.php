@@ -1,5 +1,5 @@
 <?php
-include 'db.php'; // ไฟล์เชื่อมต่อฐานข้อมูล
+include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = trim($_POST['first_name']);
@@ -9,12 +9,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_card = trim($_POST['id_card']);
     $birthdate = $_POST['birthdate'];
     $userrole = $_POST['userrole'];
-
-    // ตั้งรหัสผ่านเริ่มต้น
     $default_password = "123456"; 
     $hashed_password = password_hash($default_password, PASSWORD_BCRYPT);
-
-    // ตรวจสอบว่ามีอีเมลนี้อยู่แล้วหรือไม่
     $check_email_sql = "SELECT email FROM users WHERE email = ?";
     if ($check_stmt = $conn->prepare($check_email_sql)) {
         $check_stmt->bind_param("s", $email);
@@ -23,13 +19,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($check_stmt->num_rows > 0) {
             echo "<script>alert('อีเมลนี้ถูกใช้แล้ว กรุณาใช้อีเมลอื่น!'); history.back();</script>";
-            exit(); // หยุดการทำงาน
+            exit();
         }
 
         $check_stmt->close();
     }
-
-    // ตรวจสอบว่ามีเลขบัตรประชาชนซ้ำหรือไม่
     $check_id_card_sql = "SELECT id_card FROM users WHERE id_card = ?";
     if ($check_stmt = $conn->prepare($check_id_card_sql)) {
         $check_stmt->bind_param("s", $id_card);
@@ -43,8 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $check_stmt->close();
     }
-
-    // เพิ่มข้อมูลลงฐานข้อมูล
     $sql = "INSERT INTO users (first_name, last_name, phone, email, id_card, birthdate, password, userrole)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 

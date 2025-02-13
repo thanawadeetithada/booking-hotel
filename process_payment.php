@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-// ตรวจสอบข้อมูลที่รับมา
 if (!isset($_POST['booking_id']) || !isset($_FILES['payment_proof'])) {
     echo json_encode(["status" => "error", "message" => "ข้อมูลไม่ครบถ้วน"]);
     exit();
@@ -19,7 +18,6 @@ if (!isset($_POST['booking_id']) || !isset($_FILES['payment_proof'])) {
 
 $booking_id = intval($_POST['booking_id']);
 
-// 1️⃣ **ดึงข้อมูลจาก `booking`**
 $sql = "SELECT * FROM booking WHERE booking_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $booking_id);
@@ -33,20 +31,19 @@ if ($result->num_rows === 0) {
 
 $booking = $result->fetch_assoc();
 
-// ตรวจสอบว่า invoice_number มีอยู่หรือไม่
 $invoice_number = $booking['invoice_number'];
 if (empty($invoice_number)) {
     $invoice_number = "INV-" . time();
 }
 
-// **โฟลเดอร์อัปโหลด**
 $target_dir = "uploads/";
 if (!is_dir($target_dir)) {
     mkdir($target_dir, 0777, true);
 }
 
-// 2️⃣ **อัปโหลดหลักฐานการชำระเงิน**
-$payment_slip_name = time() . "_" . basename($_FILES["payment_proof"]["name"]);
+$file_extension = pathinfo($_FILES["payment_proof"]["name"], PATHINFO_EXTENSION); 
+
+$payment_slip_name = time() . "_" . uniqid() . "." . $file_extension;
 $target_file = $target_dir . $payment_slip_name;
 
 if (!move_uploaded_file($_FILES["payment_proof"]["tmp_name"], $target_file)) {
@@ -54,17 +51,15 @@ if (!move_uploaded_file($_FILES["payment_proof"]["tmp_name"], $target_file)) {
     exit();
 }
 
-// 3️⃣ **อัปเดตสถานะ `booking` เป็น "paid"**
 $update_sql = "UPDATE booking SET status_payment = 'paid', payment_slip = ?, invoice_number = ? WHERE booking_id = ?";
 $update_stmt = $conn->prepare($update_sql);
-$update_stmt->bind_param("ssi", $payment_slip_name, $invoice_number, $booking_id);
+$update_stmt->bind_param("ssi", $target_file, $invoice_number, $booking_id);
 
 if (!$update_stmt->execute()) {
     echo json_encode(["status" => "error", "message" => "เกิดข้อผิดพลาดในการอัปเดต Booking: " . $update_stmt->error]);
     exit();
 }
 
-// 4️⃣ **ย้ายข้อมูลจาก `booking` ไปยัง `invoice`**
 $insert_invoice_sql = "INSERT INTO invoice 
         (invoice_number, first_name, last_name, checkin_date, checkout_date, room_number, 
          room_type, guest_count, room_count, price, description, payment_method, 
@@ -80,7 +75,7 @@ $insert_stmt->bind_param("ssssssssddssssdd",
     $booking['checkin_date'], $booking['checkout_date'], $booking['room_number'], 
     $booking['room_type'], $booking['guest_count'], $booking['room_count'], 
     $booking['price'], $booking['description'], $booking['payment_method'], 
-    $status_payment, $payment_slip_name, $booking['total_amount'], $paid_amount
+    $status_payment, $target_file, $booking['total_amount'], $paid_amount
 );
 
 if (!$insert_stmt->execute()) {
@@ -90,7 +85,6 @@ if (!$insert_stmt->execute()) {
 
 $invoice_id = $conn->insert_id;
 
-// 5️⃣ **ลบข้อมูลใน `booking` หลังจากย้ายไป `invoice` แล้ว (ถ้าต้องการ)**
 $delete_booking_sql = "DELETE FROM booking WHERE booking_id = ?";
 $delete_stmt = $conn->prepare($delete_booking_sql);
 $delete_stmt->bind_param("i", $booking_id);
@@ -100,14 +94,11 @@ if (!$delete_stmt->execute()) {
     exit();
 }
 
-// **ส่งค่าไปยัง JS**
 echo json_encode([
     "status" => "success",
     "message" => "ชำระเงินสำเร็จ",
-    "invoice_id" => $invoice_id // ให้ JS ใช้ redirect ไป success_payment.php
+    "invoice_id" => $invoice_id
 ]);
-
-// **ปิด Statement**
 $stmt->close();
 $update_stmt->close();
 $insert_stmt->close();

@@ -12,7 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $description = $_POST['description'];
     $payment_method = $_POST['payment_method'];
 
-    // ค้นหา room_id จากหมายเลขห้อง
     $room_query = "SELECT room_id FROM rooms WHERE room_number = ?";
     $stmt_room = $conn->prepare($room_query);
     $stmt_room->bind_param("s", $room_number);
@@ -27,14 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // อัปโหลดไฟล์สลิปการโอนเงิน (ถ้ามีการอัปโหลดใหม่)
     $payment_slip = "";
     if (!empty($_FILES['imgpayment']['name'])) {
         $target_dir = "uploads/";
         $target_file = $target_dir . basename($_FILES["imgpayment"]["name"]);
         $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
         
-        // ตรวจสอบประเภทไฟล์ที่อนุญาต
         $allowed_types = ['jpg', 'jpeg', 'png', 'pdf'];
         if (in_array($file_type, $allowed_types)) {
             if (move_uploaded_file($_FILES["imgpayment"]["tmp_name"], $target_file)) {
@@ -54,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     $status_payment = ($payment_method === "เงินสด") ? "pending" : "paid";
 
-    // อัปเดตข้อมูลการจองในฐานข้อมูล
     if (!empty($payment_slip)) {
         $sql = "UPDATE bookings 
                 SET checkin_date = ?, checkout_date = ?, room_id = ?, payment_method = ?, status_payment = ?, payment_slip = ?

@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $sender = $conn->real_escape_string($_POST["sender"]);
     $message = $conn->real_escape_string($_POST["message"]);
-    $user_id = intval($_POST["user_id"]); // User ที่ต้องการส่งข้อความ
+    $user_id = intval($_POST["user_id"]);
     $admin_id = isset($_SESSION["admin_id"]) ? intval($_SESSION["admin_id"]) : NULL;
 
     if (!empty($message)) {

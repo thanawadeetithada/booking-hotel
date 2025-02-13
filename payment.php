@@ -6,8 +6,10 @@ if (!isset($_GET['booking_id'])) {
     die("ไม่มีรหัสการจอง");
 }
 
+$first_name = isset($_SESSION['first_name']) ? $_SESSION['first_name'] : "ไม่ทราบชื่อ";
+$last_name = isset($_SESSION['last_name']) ? $_SESSION['last_name'] : "ไม่ทราบนามสกุล";
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : "ไม่ทราบอีเมล";
-$phone = isset($_SESSION['phone']) ? $_SESSION['phone'] : "";
+$phone = isset($_SESSION['phone']) ? $_SESSION['phone'] : "ไม่ทราบเบอร์โทร";
 
 $booking_id = intval($_GET['booking_id']);
 
@@ -29,7 +31,7 @@ $booking = $result->fetch_assoc();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ชำระเงินอ</title>
+    <title>ชำระเงิน</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
     body {
@@ -101,12 +103,12 @@ $booking = $result->fetch_assoc();
                     <div class="mb-3">
                         <label class="form-label">ชื่อ *</label>
                         <input type="text" class="form-control" name="first_name"
-                            value="<?= htmlspecialchars($booking['first_name']) ?>" disabled required>
+                            value="<?= htmlspecialchars($first_name) ?>" disabled required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">นามสกุล *</label>
                         <input type="text" class="form-control" name="last_name"
-                            value="<?= htmlspecialchars($booking['last_name']) ?>" disabled required>
+                            value="<?= htmlspecialchars($last_name) ?>" disabled required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">โทรศัพท์ *</label>
@@ -166,8 +168,6 @@ $booking = $result->fetch_assoc();
         const paymentBtn = document.getElementById("paymentBtn");
         const paymentForm = document.getElementById("paymentForm");
 
-        // paymentBtn.disabled = true;
-
         fileInput.addEventListener("change", function() {
             paymentBtn.disabled = fileInput.files.length === 0;
         });
@@ -180,14 +180,13 @@ $booking = $result->fetch_assoc();
                     method: "POST",
                     body: formData
                 })
-                .then(response => response.json()) // แปลงเป็น JSON
+                .then(response => response.json())
                 .then(data => {
                     if (data.status === "success") {
                         alert("ชำระเงินสำเร็จ!");
-                        window.location.href = `receipt_booking.php?invoice_id=${data.invoice_id}`; // ใช้ค่า invoice_number ที่คืนมาจาก PHP
+                        window.location.href = `receipt_booking.php?invoice_id=${data.invoice_id}`;
                     } else {
                         alert("กรุณาแนบสลิป");
-                        // alert("เกิดข้อผิดพลาด: " + data.message);
                     }
                 })
                 .catch(error => {

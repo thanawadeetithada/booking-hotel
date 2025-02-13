@@ -3,7 +3,6 @@ session_start();
 require 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // รับค่าจากฟอร์ม
     $room_code = isset($_POST['room_code']) ? trim($_POST['room_code']) : '';
     $room_number = isset($_POST['room_number']) ? trim($_POST['room_number']) : '';
     $price = isset($_POST['price']) ? trim($_POST['price']) : '';
@@ -12,7 +11,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $isshow = isset($_POST['isshow']) ? 1 : 0;
 
     try {
-        // ตรวจสอบค่าซ้ำ
         $check_sql = "SELECT * FROM rooms WHERE room_code = ? OR room_number = ?";
         $stmt = $conn->prepare($check_sql);
         $stmt->bind_param("ss", $room_code, $room_number);
@@ -24,10 +22,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     alert('❌ รหัสห้อง หรือ เลขห้องนี้ถูกใช้แล้ว!');
                     window.history.back();
                   </script>";
-            exit(); // หยุดการทำงานทันที
+            exit();
         }
 
-        // จัดการไฟล์รูปภาพ
         $image_path = "";
         if (!empty($_FILES["image"]["name"])) {
             $image_name = basename($_FILES["image"]["name"]);
@@ -35,7 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             move_uploaded_file($_FILES["image"]["tmp_name"], $image_path);
         }
 
-        // ใช้ Prepared Statement เพื่อเพิ่มข้อมูล
         $sql = "INSERT INTO rooms (room_code, room_number, price, type, description, image_path, isshow) 
         VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -60,7 +56,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="th">
@@ -247,28 +242,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="container">
             <h2>ข้อมูลกำหนดราคาห้อง</h2>
             <form action="add_room.php" method="POST" enctype="multipart/form-data">
+
                 <div class="row mb-3">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <label for="room_code" class="form-label">รหัสห้อง</label>
                         <input class="form-control" type="text" id="room_code" name="room_code" placeholder="รหัสห้อง"
                             required>
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <label for="room_number" class="form-label">เลขห้อง</label>
                         <input class="form-control" type="text" id="room_number" name="room_number"
                             placeholder="เลขห้อง" required>
                     </div>
                 </div>
+
                 <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label for="price" class="form-label">ราคา</label>
-                        <input class="form-control" type="number" id="price" name="price" placeholder="ราคา" required>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <label for="type" class="form-label">ประเภท</label>
                         <select class="form-control" id="type" name="type" required>
                             <option value="">-- เลือกประเภท --</option>
@@ -276,7 +265,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <option value="เต็นท์">เต็นท์</option>
                         </select>
                     </div>
+                    <div class="col-md-6">
+                        <label for="price" class="form-label">ราคา</label>
+                        <input class="form-control" type="number" id="price" name="price" placeholder="ราคา" required>
+                    </div>
                 </div>
+
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <label for="description" class="form-label">รายละเอียด</label>

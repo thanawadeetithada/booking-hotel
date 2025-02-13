@@ -11,6 +11,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $isshow = isset($_POST['isshow']) ? 1 : 0;
     $image_path = $_POST['existing_image'];
 
+    $check_sql = "SELECT room_code FROM rooms WHERE room_number = ? AND room_code != ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("ss", $room_number, $room_code);
+    $check_stmt->execute();
+    $check_stmt->store_result();
+
+    if ($check_stmt->num_rows > 0) {
+        echo "<script>alert('มีเลขห้องนี้อยู่แล้ว กรุณาใช้หมายเลขอื่น'); window.history.back();</script>";
+        exit();
+    }
+
     if (!empty($_FILES["image"]["name"])) {
         $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
         $file_ext = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));

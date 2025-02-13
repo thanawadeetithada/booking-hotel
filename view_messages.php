@@ -21,7 +21,6 @@ $result = $conn->query($sql);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
-    /* ปรับแต่ง UI */
     body {
         font-family: 'Arial', sans-serif;
 
@@ -228,7 +227,7 @@ $(document).ready(function() {
                         alert("ลบข้อความของผู้ใช้เรียบร้อย!");
                         row.fadeOut(500, function() {
                             $(this).remove();
-                        }); // ✅ ลบแถวทันที
+                        });
                     } else {
                         alert("เกิดข้อผิดพลาด: " + response);
                     }

@@ -2,14 +2,12 @@
 session_start();
 require 'db.php';
 
-// รับค่า user_id จาก URL
 if (!isset($_GET['user_id'])) {
     die("ไม่มีการระบุ ID");
 }
 
 $user_id = $_GET['user_id'];
 
-// ดึงข้อมูลลูกค้าจากฐานข้อมูล
 $sql = "SELECT * FROM users WHERE user_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
@@ -34,47 +32,6 @@ $row = $result->fetch_assoc();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- <script>
-    $(document).ready(function() {
-        $("#email").on("blur", function() {
-            var email = $(this).val();
-            if (email.length > 0) {
-                $.ajax({
-                    url: "check_email.php",
-                    type: "POST",
-                    data: {
-                        email: email
-                    },
-                    success: function(response) {
-                        if (response.trim() == "used") {
-                            alert("อีเมลนี้ถูกใช้แล้ว กรุณาใช้อีเมลอื่น!");
-                            $("#email").val("").focus();
-                        }
-                    }
-                });
-            }
-        });
-
-        $("#id_card").on("blur", function() {
-            var id_card = $(this).val();
-            if (id_card.length > 0) {
-                $.ajax({
-                    url: "check_id_card.php",
-                    type: "POST",
-                    data: {
-                        id_card: id_card
-                    },
-                    success: function(response) {
-                        if (response.trim() == "used") {
-                            alert("เลขบัตรประชาชนนี้ถูกใช้แล้ว กรุณาตรวจสอบ!");
-                            $("#id_card").val("").focus();
-                        }
-                    }
-                });
-            }
-        });
-    });
-    </script> -->
     <style>
     body {
         font-family: 'Arial', sans-serif;

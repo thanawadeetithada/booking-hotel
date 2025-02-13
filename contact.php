@@ -1,16 +1,13 @@
 <?php
 session_start();
-include 'db.php'; // เรียกใช้ไฟล์เชื่อมต่อฐานข้อมูล
+include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // รับค่าจากฟอร์ม
     $name = $conn->real_escape_string($_POST['name']);
     $email = $conn->real_escape_string($_POST['email']);
     $message = $conn->real_escape_string($_POST['message']);
 
-    // ตรวจสอบว่าข้อมูลไม่ว่าง
     if (!empty($name) && !empty($email) && !empty($message)) {
-        // คำสั่ง SQL สำหรับบันทึกข้อมูล
         $sql = "INSERT INTO contact_messages (name, email, message) VALUES ('$name', '$email', '$message')";
 
         if ($conn->query($sql) === TRUE) {
@@ -22,7 +19,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['error'] = "All fields are required!";
     }
 
-    // Redirect กลับไปที่หน้า contact.php
     header("Location: contact.php");
     exit();
 }
@@ -131,8 +127,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 20%;
         border-radius: 10px;
     }
-
-    /* Google Map */
     .map iframe {
         height: 450px;
     }
@@ -210,8 +204,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         border-radius: 5px;
         margin-top: 40vh;
     }
-
-    /* Gallery Section */
     .gallery {
         display: flex;
         justify-content: center;
@@ -228,8 +220,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .gallery-item p {
         color: #535d4c;
     }
-
-    /* Review Section */
     .review {
         display: flex;
         justify-content: center;
@@ -247,7 +237,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         color: #535d4c;
     }
 
-    /* News Section */
     .news {
         text-align: center;
         padding: 40px;
@@ -369,10 +358,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .contact-form {
         width: 100%;
         max-width: 500px;
-        /* จำกัดความกว้าง */
         background: white;
         padding: 30px 30px 20px 30px;
-        /* เพิ่ม padding ให้ช่องห่างจากขอบ */
         border-radius: 10px;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         text-align: center;
@@ -391,21 +378,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 100%;
         padding: 12px;
         margin-bottom: 15px;
-        /* เพิ่มระยะห่างระหว่างช่อง */
         border: 1px solid #ccc;
         border-radius: 8px;
-        /* ปรับมุมให้ดูโค้ง */
         font-size: 1rem;
         box-sizing: border-box;
-        /* ป้องกันขนาดล้น */
         height: fit-content;
     }
 
     .contact-form textarea {
         height: 120px;
-        /* กำหนดความสูงให้พอดี */
         resize: vertical;
-        /* อนุญาตให้ปรับขนาดได้เฉพาะแนวตั้ง */
     }
 
     .contact-form button {
@@ -489,11 +471,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php
 if (isset($_SESSION['success'])) {
     echo "<div style='color: green; text-align: center; font-size: 1.2rem;'>" . $_SESSION['success'] . "</div>";
-    unset($_SESSION['success']); // ลบข้อความหลังแสดงผล
+    unset($_SESSION['success']);
 }
 if (isset($_SESSION['error'])) {
     echo "<div style='color: red; text-align: center; font-size: 1.2rem;'>" . $_SESSION['error'] . "</div>";
-    unset($_SESSION['error']); // ลบข้อความหลังแสดงผล
+    unset($_SESSION['error']);
 }
 ?>
 

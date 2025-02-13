@@ -1,11 +1,18 @@
 <?php
 session_start();
+ob_start();
 require 'db.php';
 
 $error_message = "";
+if (!empty($_SERVER['HTTP_REFERER']) && parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) === $_SERVER['HTTP_HOST']) {
+    $referer_page = basename(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH)); // ดึงเฉพาะชื่อไฟล์
+    if ($referer_page !== "login.php") {
+        $_SESSION['redirect_to'] = $_SERVER['HTTP_REFERER'];
+    }
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
 
     $sql = "SELECT * FROM users WHERE email = ?";
@@ -16,7 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($result->num_rows == 1) {
             $user = $result->fetch_assoc();
-            
             if (password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['first_name'] = $user['first_name'];
@@ -26,11 +32,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['phone'] = $user['phone'];
 
                 if ($user['userrole'] == 'admin') {
-                    header("Location: admin_dashboard.php");
+                    $redirect_page = "admin_dashboard.php";
                 } else {
-                    header("Location: index.php");
+                    $redirect_page = $_SESSION['redirect_to'] ?? 'index.php';
+                    unset($_SESSION['redirect_to']);
                 }
-                exit();            
+
+                header("Location: " . $redirect_page);
+                exit();
             } else {
                 $error_message = "❌ รหัสผ่านไม่ถูกต้อง!";
             }
@@ -41,6 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 $conn->close();
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>

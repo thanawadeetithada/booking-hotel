@@ -2,11 +2,9 @@
 session_start();
 require 'db.php';
 
-// ตรวจสอบว่ามีการส่ง room_code มาหรือไม่
 if (isset($_GET['room_code'])) {
     $room_code = $_GET['room_code'];
 
-    // ดึงข้อมูลห้องจากฐานข้อมูล
     $sql = "SELECT * FROM rooms WHERE room_code = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $room_code);
@@ -217,28 +215,20 @@ if (isset($_GET['room_code'])) {
             <h2>แก้ไขข้อมูลห้องพัก</h2>
             <form action="update_room.php" method="POST" enctype="multipart/form-data">
                 <div class="row mb-3">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <label for="room_code" class="form-label">รหัสห้อง</label>
                         <input class="form-control" type="text" id="room_code" name="room_code"
                             value="<?php echo $room['room_code']; ?>" readonly>
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <label for="room_number" class="form-label">เลขห้อง</label>
                         <input class="form-control" type="text" id="room_number" name="room_number"
                             value="<?php echo $room['room_number']; ?>" required>
                     </div>
                 </div>
+
                 <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label for="price" class="form-label">ราคา</label>
-                        <input class="form-control" type="number" id="price" name="price"
-                            value="<?php echo $room['price']; ?>" required>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <label for="type" class="form-label">ประเภท</label>
                         <select class="form-control" id="type" name="type" required>
                             <option value="">-- เลือกประเภท --</option>
@@ -247,6 +237,11 @@ if (isset($_GET['room_code'])) {
                             <option value="เต็นท์" <?php echo ($room['type'] == 'เต็นท์') ? 'selected' : ''; ?>>เต็นท์
                             </option>
                         </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="price" class="form-label">ราคา</label>
+                        <input class="form-control" type="number" id="price" name="price"
+                            value="<?php echo $room['price']; ?>" required>
                     </div>
                 </div>
                 <div class="row mb-3">

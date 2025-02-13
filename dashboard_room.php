@@ -18,7 +18,6 @@ $result = $conn->query($sql);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
-    /* ปรับแต่ง UI */
     body {
         font-family: 'Arial', sans-serif;
 
@@ -262,7 +261,7 @@ $result = $conn->query($sql);
                     <?php
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $checked = $row['isshow'] == 1 ? "checked" : ""; // เช็คสถานะ
+            $checked = $row['isshow'] == 1 ? "checked" : "";
             echo "<tr>
                 <td>{$row['room_code']}</td>
                 <td>{$row['room_number']}</td>

@@ -1,10 +1,9 @@
 <?php
-include 'db.php'; // ไฟล์เชื่อมต่อฐานข้อมูล
+include 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $invoice_id = intval($_POST['id']);
     
-    // ตรวจสอบว่ามีการจองที่ต้องการลบหรือไม่
     $check_sql = "SELECT payment_slip FROM invoice WHERE invoice_id = ?";
     $stmt = $conn->prepare($check_sql);
     $stmt->bind_param("i", $invoice_id);
@@ -15,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
         $row = $result->fetch_assoc();
         $payment_slip = $row['payment_slip'];
         
-        // ลบไฟล์สลิปการชำระเงินถ้ามี
         if (!empty($payment_slip)) {
             $slip_path = "uploads/" . $payment_slip;
             if (file_exists($slip_path)) {
@@ -23,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
             }
         }
         
-        // ลบข้อมูลจากฐานข้อมูล
         $delete_sql = "DELETE FROM invoice WHERE invoice_id = ?";
         $stmt = $conn->prepare($delete_sql);
         $stmt->bind_param("i", $invoice_id);

@@ -1,5 +1,5 @@
 <?php
-include 'db.php'; // เชื่อมต่อฐานข้อมูล
+include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = $_POST['first_name'];
@@ -15,11 +15,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $payment_method = $_POST['payment_method'];
     $status_payment = ($payment_method == "โอนเงิน") ? 'paid' : 'pending';
     $invoice_number = "INV-" . strtoupper(substr(md5(time() . rand()), 0, 10));
-    // คำนวณจำนวนคืนที่เข้าพัก
     $checkin = new DateTime($checkin_date);
     $checkout = new DateTime($checkout_date);
     $interval = $checkin->diff($checkout);
-    $nights = $interval->days; // จำนวนคืนที่เข้าพัก
+    $nights = $interval->days;
     
     if ($nights <= 0) {
         die("วันที่เช็คเอาท์ต้องมากกว่าวันที่เช็คอิน");
@@ -31,10 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $total_amount = $price * $room_count * $nights;
     }
     
-
     $paid_amount = ($status_payment == 'paid') ? $total_amount : 0;
     
-    // จัดการอัปโหลดไฟล์สลิปการโอนเงิน
     $payment_slip = NULL;
     if ($payment_method == "โอนเงิน" && isset($_FILES["imgpayment"]["name"]) && $_FILES["imgpayment"]["size"] > 0) {
         $target_dir = "uploads/";
@@ -350,7 +347,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         var priceInput = document.getElementById("price");
 
         roomSelect.innerHTML = "<option value=''>-- เลือกหมายเลขห้อง --</option>";
-        priceInput.value = ""; // ล้างราคาห้อง
+        priceInput.value = "";
 
         if (type) {
             var xhr = new XMLHttpRequest();
@@ -363,7 +360,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             var option = document.createElement("option");
                             option.value = room.room_number;
                             option.textContent = room.room_number;
-                            option.dataset.price = room.price; // เก็บราคาห้องใน dataset
+                            option.dataset.price = room.price;
                             roomSelect.appendChild(option);
                         });
                     } else {
@@ -375,7 +372,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // ฟังก์ชันอัปเดตราคาห้องเมื่อเลือกหมายเลขห้อง
     document.getElementById("room_number").addEventListener("change", function() {
         var selectedOption = this.options[this.selectedIndex];
         var priceInput = document.getElementById("price");

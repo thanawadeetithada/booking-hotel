@@ -8,7 +8,6 @@ if (!isset($_GET['invoice_id'])) {
 
 $booking_id = $_GET['invoice_id'];
 $userrole = $_SESSION['userrole'];
-// ดึงข้อมูลใบแจ้งชำระเงินจากฐานข้อมูล
 $stmt = $conn->prepare("SELECT * FROM invoice WHERE invoice_id = ?");
 $stmt->bind_param("i", $booking_id);
 $stmt->execute();
@@ -19,7 +18,6 @@ if (!$invoice) {
     die("ไม่พบข้อมูลการจอง");
 }
 
-// ใช้ booking เป็น invoice_items
 $invoice_items = [$invoice];
 ?>
 

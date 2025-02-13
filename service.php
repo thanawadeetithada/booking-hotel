@@ -12,6 +12,7 @@ $searchPerformed = isset($_POST['startDate']) && isset($_POST['endDate']);
 $sql_rooms = "SELECT r.room_code, r.room_number, r.price, r.type, r.description, r.image_path
         FROM rooms r
         WHERE r.isshow = 1
+        AND r.type = 'ห้องพัก'
         AND NOT EXISTS (
             SELECT 1 FROM booking b
             WHERE b.room_number = r.room_number
@@ -64,6 +65,16 @@ if ($searchPerformed) {
 }
 
 $conn->close();
+
+$response = [];
+
+if (!isset($_SESSION['user_id'])) {
+    $response['status'] = 'not_logged_in';
+} else {
+    $response['status'] = 'logged_in';
+    $response['first_name'] = $_SESSION['first_name'] ?? 'Guest';
+    $response['last_name'] = $_SESSION['last_name'] ?? 'User';
+}
 
 ?>
 
@@ -432,10 +443,12 @@ $conn->close();
                 <div class="mb-3">
                     <label class="form-label">📅 วันที่เข้าพัก - วันที่ออก</label>
                     <div class="input-group">
-                        <input type="text" id="startDate" autocomplete="off" name="startDate" class="form-control" placeholder="เช็คอิน"
+                        <input type="text" id="startDate" autocomplete="off" name="startDate" class="form-control"
+                            placeholder="เช็คอิน"
                             value="<?= isset($_POST['startDate']) ? htmlspecialchars($_POST['startDate']) : '' ?>">
                         <span class="input-group-text">—</span>
-                        <input type="text" id="endDate" autocomplete="off" name="endDate" class="form-control" placeholder="เช็คเอาท์"
+                        <input type="text" id="endDate" autocomplete="off" name="endDate" class="form-control"
+                            placeholder="เช็คเอาท์"
                             value="<?= isset($_POST['endDate']) ? htmlspecialchars($_POST['endDate']) : '' ?>">
                     </div>
                 </div>
@@ -594,6 +607,9 @@ $conn->close();
     </footer>
 
     <script>
+    function goBack() {
+        window.history.back();
+    }
     $(document).ready(function() {
         $("#startDate, #endDate").datepicker({
             dateFormat: "dd M yy",
@@ -653,8 +669,8 @@ $conn->close();
                     let checkoutDate = $("#endDate").val();
                     let guestCount = $("#adults").val();
                     let roomCount = $("#rooms").val();
-                    let firstName = response.first_name || "Guest";
-                    let lastName = response.last_name || "User";
+                    let firstName = response.first_name;
+                    let lastName = response.last_name;
                     let description = "การจองห้องพักผ่านระบบ";
                     let paymentMethod = "โอนเงิน";
 
@@ -663,28 +679,33 @@ $conn->close();
                         return;
                     }
 
+                    let data = {
+                        first_name: firstName,
+                        last_name: lastName,
+                        checkin_date: checkinDate,
+                        checkout_date: checkoutDate,
+                        room_number: roomNumber,
+                        room_type: roomType,
+                        guest_count: guestCount,
+                        room_count: roomCount,
+                        price: price,
+                        description: description,
+                        payment_method: paymentMethod
+                    };
+
+                    console.log("Data being sent to insert_booking.php:", data); // เช็คข้อมูลก่อนส่ง
+
                     $.ajax({
                         url: "insert_booking.php",
                         method: "POST",
-                        data: {
-                            first_name: firstName,
-                            last_name: lastName,
-                            checkin_date: checkinDate,
-                            checkout_date: checkoutDate,
-                            room_number: roomNumber,
-                            room_type: roomType,
-                            guest_count: guestCount,
-                            room_count: roomCount,
-                            price: price,
-                            description: description,
-                            payment_method: paymentMethod
-                        },
+                        data: data,
                         dataType: "json",
                         success: function(response) {
                             if (response.status === "success") {
                                 window.location.href =
                                     `payment.php?booking_id=${response.booking_id}`;
                             } else {
+                                console.error("Booking Error:", response);
                                 alert("เกิดข้อผิดพลาดในการจอง: " + response.message);
                             }
                         },

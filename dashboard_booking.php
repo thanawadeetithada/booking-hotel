@@ -21,8 +21,6 @@ $sql = "SELECT
             b.paid_amount
         FROM invoice b
         ORDER BY b.invoice_id DESC";
-$slip_path = !empty($row['payment_slip']) ? "uploads/{$row['payment_slip']}" : "";
-
 $result = $conn->query($sql);
 ?>
 
@@ -218,7 +216,7 @@ $result = $conn->query($sql);
                     <?php
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $slip_path = "uploads/{$row['payment_slip']}";
+            $slip_path = "{$row['payment_slip']}";
 
             echo "<tr>
                 <td>{$row['first_name']} {$row['last_name']}</td>
@@ -244,29 +242,26 @@ $result = $conn->query($sql);
 
                 echo "</td>";
 
-            // แสดงรูปสลิปการชำระเงิน
-            echo "<td>";
-            if (!empty($row['payment_slip'])) {
-                echo "<a href='{$slip_path}' target='_blank'>
-<img src='<?php echo $slip_path; ?>' onerror='this.onerror=null; this.src='no-image.png';' alt='Slip' width='80px'
-                    style='border-radius: 5px; border: 1px solid #ddd;'>
-                    </a>";
-                    } else {
-                    echo "<span class='text-muted'>ไม่มีสลิป</span>";
-                    }
+           
+                echo "<td>";
+                if (!empty($row['payment_slip'])) {
+                    $slip_path = "uploads/" . basename($row['payment_slip']);
+                    echo "<img src='$slip_path' alt='สลิปการชำระเงิน' width='100' height='100' style='border-radius: 5px;'>";
+                } else {
+                    echo "ไม่มีสลิป";
+                }
                     echo "</td>";
 
-                    // ปุ่มจัดการ (แก้ไข, ดูใบเสร็จ, ลบ)
                     echo "<td class='btn-action1'>
-                        <a href='edit_booking.php?invoice_id={$row[' invoice_id']}' class='btn btn-warning btn-sm'>
+                        <a href='edit_booking.php?invoice_id={$row['invoice_id']}' class='btn btn-warning btn-sm'>
                             <i class='fa-solid fa-pencil'></i>
                         </a>
                         &nbsp;&nbsp;
-                        <a href='receipt_booking.php?invoice_id={$row[' invoice_id']}' class='btn btn-primary btn-sm'>
+                        <a href='receipt_booking.php?invoice_id={$row['invoice_id']}' class='btn btn-primary btn-sm'>
                             <i class='fa-solid fa-file-invoice-dollar'></i>
                         </a>
                         &nbsp;&nbsp;
-                        <a href='#' class='btn btn-danger btn-sm delete-btn' data-id='{$row[' invoice_id']}'>
+                        <a href='#' class='btn btn-danger btn-sm delete-btn' data-id='{$row['invoice_id']}'>
                             <i class='fa-regular fa-trash-can'></i>
                         </a>
                     </td>

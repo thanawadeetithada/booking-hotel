@@ -2,7 +2,7 @@
 require 'db.php';
 
 if (isset($_POST['room_id']) && isset($_POST['isshow'])) {
-    $room_id = intval($_POST['room_id']); // แปลงให้เป็นตัวเลข
+    $room_id = intval($_POST['room_id']);
     $isshow = intval($_POST['isshow']);
 
     $sql = "UPDATE rooms SET isshow = $isshow WHERE room_id = $room_id";

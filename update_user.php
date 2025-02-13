@@ -2,7 +2,6 @@
 session_start();
 require 'db.php';
 
-// ตรวจสอบว่ามีการส่งค่า POST หรือไม่
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_id = $_POST["user_id"];
     $first_name = $_POST["first_name"];
@@ -13,7 +12,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $birthdate = $_POST["birthdate"];
     $userrole = $_POST["userrole"];
 
-    // อัปเดตข้อมูล
     $sql = "UPDATE users SET first_name=?, last_name=?, phone=?, email=?, id_card=?, birthdate=?, userrole=? WHERE user_id=?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sssssssi", $first_name, $last_name, $phone, $email, $id_card, $birthdate, $userrole, $user_id);

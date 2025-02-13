@@ -2,30 +2,25 @@
 session_start();
 include "db.php";
 
-// ตรวจสอบว่าได้รับค่า user_id จาก URL หรือไม่
 if (!isset($_GET['user_id'])) {
     die("ไม่พบ user_id");
 }
 
-$user_id = intval($_GET['user_id']); // รับค่า user_id
+$user_id = intval($_GET['user_id']);
 
-// Debugging: เช็คค่าที่รับมา
 if ($user_id == 0) {
     die("user_id ไม่ถูกต้อง");
 }
 
-// ดึงข้อมูลผู้ใช้จากตาราง users
 $user = $conn->query("SELECT first_name, last_name, userrole FROM users WHERE user_id = $user_id")->fetch_assoc();
 if (!$user) {
     die("ไม่พบข้อมูลผู้ใช้");
 }
 
-// Debugging: ตรวจสอบว่า userrole เป็น 'user' หรือไม่
 if ($user['userrole'] !== 'user') {
     die("ไม่สามารถเข้าถึงแชทของผู้ใช้ admin ได้");
 }
 
-// ดึงข้อความแชทของ user_id นี้
 $messages = $conn->query("
     SELECT * FROM messages 
     WHERE user_id = $user_id 

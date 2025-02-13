@@ -1,14 +1,12 @@
 <?php
-include 'db.php'; // เชื่อมต่อฐานข้อมูล
+include 'db.php';
 
-// ตรวจสอบว่ามี invoice_id ที่ส่งมาหรือไม่
 if (!isset($_GET['invoice_id']) || empty($_GET['invoice_id'])) {
     die("ไม่พบข้อมูลการจองที่ต้องการแก้ไข");
 }
 
 $invoice_id = intval($_GET['invoice_id']);
 
-// ดึงข้อมูลการจองจากฐานข้อมูล
 $sql = "SELECT * FROM invoice WHERE invoice_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $invoice_id);
@@ -20,8 +18,10 @@ if ($result->num_rows === 0) {
 }
 
 $booking = $result->fetch_assoc();
+$slip_path = (!empty($booking['payment_slip']) && file_exists($booking['payment_slip'])) 
+    ? $booking['payment_slip'] 
+    : "";
 
-// เมื่อกดบันทึกการแก้ไข
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
@@ -36,7 +36,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $payment_method = $_POST['payment_method'];
     $status_payment = ($payment_method == "โอนเงิน") ? 'paid' : 'pending';
 
-    // คำนวณจำนวนคืน
     $checkin = new DateTime($checkin_date);
     $checkout = new DateTime($checkout_date);
     $interval = $checkin->diff($checkout);
@@ -54,38 +53,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $paid_amount = ($status_payment == 'paid') ? $total_amount : 0;
 
-    // อัปโหลดไฟล์สลิปใหม่ (ถ้ามี)
-    $payment_slip = $booking['payment_slip']; // ค่าเริ่มต้นเป็นค่าที่มีอยู่แล้ว
-    if ($payment_method == "โอนเงิน" && isset($_FILES["imgpayment"]["name"]) && $_FILES["imgpayment"]["size"] > 0) {
+$payment_slip = $booking['payment_slip'];
+if ($payment_method == "โอนเงิน") {
+    if (isset($_FILES["imgpayment"]["name"]) && $_FILES["imgpayment"]["size"] > 0) {
         $target_dir = "uploads/";
         $file_ext = pathinfo($_FILES["imgpayment"]["name"], PATHINFO_EXTENSION);
-        $payment_slip = $target_dir . "INV-" . $invoice_id . "." . $file_ext;
+        $new_file_name = "INV-" . $invoice_id . "." . $file_ext;
+        $new_file_path = $target_dir . $new_file_name;
 
-        if (!move_uploaded_file($_FILES["imgpayment"]["tmp_name"], $payment_slip)) {
+        if (!empty($booking['payment_slip']) && file_exists($booking['payment_slip'])) {
+            unlink($booking['payment_slip']);
+        }
+
+        if (move_uploaded_file($_FILES["imgpayment"]["tmp_name"], $new_file_path)) {
+            $payment_slip = $new_file_path;
+        } else {
             die("เกิดข้อผิดพลาดในการอัปโหลดไฟล์สลิป");
         }
     }
+} else {
+    $payment_slip = "";
+}
 
-    // อัปเดตข้อมูลในฐานข้อมูล
     $sql_update = "UPDATE invoice SET 
-        first_name = ?, last_name = ?, checkin_date = ?, checkout_date = ?, room_number = ?, 
-        room_type = ?, guest_count = ?, room_count = ?, price = ?, description = ?, 
-        payment_method = ?, status_payment = ?, payment_slip = ?, total_amount = ?, paid_amount = ? 
-        WHERE invoice_id = ?";
+    first_name = ?, last_name = ?, checkin_date = ?, checkout_date = ?, room_number = ?, 
+    room_type = ?, guest_count = ?, room_count = ?, price = ?, description = ?, 
+    payment_method = ?, status_payment = ?, payment_slip = ?, total_amount = ?, paid_amount = ? 
+    WHERE invoice_id = ?";
 
-    $stmt_update = $conn->prepare($sql_update);
-    $stmt_update->bind_param("ssssssiiidsssddi",
-        $first_name, $last_name, $checkin_date, $checkout_date, $room_number,
-        $room_type, $guest_count, $room_count, $price, $description,
-        $payment_method, $status_payment, $payment_slip, $total_amount, $paid_amount, $invoice_id
-    );
+$stmt_update = $conn->prepare($sql_update);
+$stmt_update->bind_param("ssssssiidssssddi",
+    $first_name, $last_name, $checkin_date, $checkout_date, $room_number,
+    $room_type, $guest_count, $room_count, $price, $description,
+    $payment_method, $status_payment, $payment_slip, $total_amount, $paid_amount, $invoice_id
+);
 
-    if ($stmt_update->execute()) {
-        echo "<script>alert('อัปเดตข้อมูลการจองสำเร็จ!'); window.location.href='dashboard_booking.php';</script>";
-    } else {
-        echo "เกิดข้อผิดพลาด: " . $stmt_update->error;
-    }
-
+if ($stmt_update->execute()) {
+    echo "<script>alert('อัปเดตข้อมูลการจองสำเร็จ!'); window.location.href='dashboard_booking.php';</script>";
+} else {
+    echo "เกิดข้อผิดพลาด: " . $stmt_update->error;
+}
     $stmt_update->close();
 }
 
@@ -132,6 +139,7 @@ $conn->close();
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 700px;
+        margin: 30px auto;
     }
 
     h2 {
@@ -342,10 +350,21 @@ $conn->close();
                     </div>
                 </div>
 
-                <div class="row mb-3" id="slip_container">
+                <div class="row mb-3" id="slip_container"
+                    style="display: <?= ($booking['payment_method'] == "เงินสด") ? 'none' : 'block'; ?>">
                     <div class="col-md-12">
-                        <label>สลิปการโอนเงิน</label>
+                        <label>สลิปการโอนเงิน</label><br>
+
+                        <?php if (!empty($slip_path)) : ?>
+                        <img id="preview-slip" src="<?php echo $slip_path; ?>" alt="Payment Slip" width="200px"
+                            style="display:block; margin-bottom:10px;"
+                            onerror="this.onerror=null; this.style.display='none';">
+                        <?php else: ?>
+                        <p style="color: red;">ไม่มีสลิปการโอนเงิน</p>
+                        <?php endif; ?>
+
                         <input type="file" id="imgpayment" name="imgpayment" class="form-control">
+                        <input type="hidden" name="existing_slip" value="<?php echo $booking['payment_slip']; ?>">
                     </div>
                 </div>
 
@@ -358,14 +377,23 @@ $conn->close();
         </div>
     </div>
     <script>
+    document.getElementById('imgpayment').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const preview = document.getElementById('preview-slip');
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        }
+    });
+
     function toggleSlipRequirement() {
         var paymentMethod = document.querySelector('select[name="payment_method"]').value;
         var slipContainer = document.getElementById("slip_container");
 
         if (paymentMethod === "โอนเงิน") {
-            slipContainer.style.display = "block"; // แสดง
+            slipContainer.style.display = "block";
         } else {
-            slipContainer.style.display = "none"; // ซ่อน
+            slipContainer.style.display = "none";
         }
     }
 
@@ -394,7 +422,7 @@ $conn->close();
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     roomNumberSelect.innerHTML = xhr.responseText;
-                    fetchPrice(roomNumberSelect.value); // อัปเดตราคาทันที
+                    fetchPrice(roomNumberSelect.value);
                 }
             };
             xhr.send("room_type=" + roomType);
