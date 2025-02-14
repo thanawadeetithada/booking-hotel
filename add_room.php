@@ -68,15 +68,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ข้อมูลกำหนดราคาห้อง</title>
+    <title>ตั้งค่าราคาห้องพัก</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
     body {
-        font-family: 'Arial', sans-serif;
-        height: 100vh;
+        font-family: 'Prompt', sans-serif;
+        height: auto;
         background: url('bg/sky.png') no-repeat center center/cover;
         margin: 0;
     }
@@ -101,6 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 700px;
+        margin: 20px;
     }
 
     h2 {
@@ -141,7 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .cancel-btn {
         background: #ccc;
         color: black;
-        margin-left: 10px;
+        margin-left: 5px;
     }
 
     .form-control {
@@ -245,7 +246,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <div class="container-wrapper">
         <div class="container">
-            <h2>ข้อมูลกำหนดราคาห้อง</h2>
+            <h2>ตั้งค่าราคาห้องพัก</h2>
             <form action="add_room.php" method="POST" enctype="multipart/form-data">
 
                 <div class="row mb-3">

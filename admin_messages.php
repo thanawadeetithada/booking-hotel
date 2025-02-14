@@ -47,7 +47,7 @@ $messages = $conn->query("
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
     body {
-        font-family: 'Arial', sans-serif;
+        font-family: 'Prompt', sans-serif;
         height: 100vh;
         background: url('bg/sky.png') no-repeat center center/cover;
         margin: 0;

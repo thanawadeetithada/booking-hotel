@@ -17,15 +17,14 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ข้อมูลห้องพัก</title>
+    <title>รายละเอียดห้องพัก</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
     body {
-        font-family: 'Arial', sans-serif;
-
+        font-family: 'Prompt', sans-serif;
         height: 100vh;
         background: url('bg/sky.png') no-repeat center center/cover;
         margin: 0;
@@ -74,36 +73,13 @@ $result = $conn->query($sql);
     .header-card {
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px;
     }
 
     .form-control modal-text {
         height: fit-content;
         width: 50%;
-    }
-
-    .table th:nth-child(4),
-    .table td:nth-child(4) {
-        width: 17%;
-    }
-
-    .table th:nth-child(5),
-    .table td:nth-child(5) {
-        width: 15%;
-    }
-
-    .table th:nth-child(6),
-    .table td:nth-child(6) {
-        width: 15%;
-    }
-
-    .table th:nth-child(7),
-    .table td:nth-child(7) {
-        width: 13%;
-    }
-
-    .table td:nth-child(9) {
-        text-align: center;
-        vertical-align: middle;
     }
 
     .btn-action {
@@ -141,17 +117,31 @@ $result = $conn->query($sql);
 
     .search-add {
         display: flex;
-        flex-wrap: wrap;
         gap: 15px;
-        align-items: flex-end;
+        align-items: center;
     }
 
     .tab-func {
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        justify-content: flex-start;
+        align-items: center;
     }
 
+    @media (max-width: 768px) {
+        .search-add {
+            flex-direction: row;
+            gap: 10px;
+        }
+
+        .search-name {
+            width: 20%;
+            flex: 1;
+        }
+
+        .tab-func button {
+            width: max-content;
+        }
+    }
 
     .switch {
         position: relative;
@@ -236,7 +226,7 @@ $result = $conn->query($sql);
 
     <div class="card">
         <div class="header-card">
-            <h3 class="text-left">ข้อมูลห้องพัก</h3>
+            <h3 class="text-left">รายละเอียดห้องพัก</h3>
             <div class="search-add">
                 <div class="tab-func">
                     <button type="button" class="btn btn-primary" onclick="window.location.href='add_room.php'">
@@ -244,7 +234,7 @@ $result = $conn->query($sql);
                     </button>
                 </div>
                 <div class="tab-func">
-                    <input type="text" class="form-control search-name" placeholder="ค้นหาด้วยรหัสห้อง">
+                    <input type="text" class="form-control search-name" placeholder="ค้นหา...">
                 </div>
             </div>
         </div>
@@ -262,6 +252,7 @@ $result = $conn->query($sql);
                         <th>สถานะห้องพัก</th>
                         <th>จัดการ</th>
                     </tr>
+                </thead>
                 <tbody>
                     <?php
     if ($result->num_rows > 0) {
@@ -297,7 +288,6 @@ $result = $conn->query($sql);
     $conn->close();
     ?>
                 </tbody>
-
             </table>
         </div>
     </div>

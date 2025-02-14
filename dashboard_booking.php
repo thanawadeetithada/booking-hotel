@@ -41,10 +41,8 @@ $result = $conn->query($sql);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
-    /* ปรับแต่ง UI */
     body {
-        font-family: 'Arial', sans-serif;
-
+        font-family: 'Prompt', sans-serif;
         height: 100vh;
         background: url('bg/sky.png') no-repeat center center/cover;
         margin: 0;
@@ -93,6 +91,8 @@ $result = $conn->query($sql);
     .header-card {
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px;
     }
 
     .form-control modal-text {
@@ -135,15 +135,30 @@ $result = $conn->query($sql);
 
     .search-add {
         display: flex;
-        flex-wrap: wrap;
         gap: 15px;
-        align-items: flex-end;
+        align-items: center;
     }
 
     .tab-func {
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    @media (max-width: 768px) {
+        .search-add {
+            flex-direction: row;
+            gap: 10px;
+        }
+
+        .search-name {
+            width: 20%;
+            flex: 1;
+        }
+
+        .tab-func button {
+            width: max-content;
+        }
     }
     </style>
 </head>
@@ -274,7 +289,7 @@ $result = $conn->query($sql);
                     }
                     } else {
                     echo "<tr>
-                        <td colspan='13' class='text-center'>ไม่มีข้อมูลการจอง</td>
+                        <td colspan='14' class='text-center'>ไม่มีข้อมูลการจอง</td>
                     </tr>";
                     }
                     $conn->close();

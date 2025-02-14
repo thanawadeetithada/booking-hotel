@@ -18,15 +18,14 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ข้อมูลลูกค้า</title>
+    <title>รายชื่อลูกค้า</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
     body {
-        font-family: 'Arial', sans-serif;
-
+        font-family: 'Prompt', sans-serif;
         height: 100vh;
         background: url('bg/sky.png') no-repeat center center/cover;
         margin: 0;
@@ -75,36 +74,13 @@ $result = $conn->query($sql);
     .header-card {
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px;
     }
 
     .form-control modal-text {
         height: fit-content;
         width: 50%;
-    }
-
-    .table th:nth-child(4),
-    .table td:nth-child(4) {
-        width: 17%;
-    }
-
-    .table th:nth-child(5),
-    .table td:nth-child(5) {
-        width: 15%;
-    }
-
-    .table th:nth-child(6),
-    .table td:nth-child(6) {
-        width: 15%;
-    }
-
-    .table th:nth-child(7),
-    .table td:nth-child(7) {
-        width: 13%;
-    }
-
-    .table td:nth-child(9) {
-        text-align: center;
-        vertical-align: middle;
     }
 
     .btn-action {
@@ -142,15 +118,75 @@ $result = $conn->query($sql);
 
     .search-add {
         display: flex;
-        flex-wrap: wrap;
         gap: 15px;
-        align-items: flex-end;
+        align-items: center;
     }
 
     .tab-func {
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    @media (max-width: 768px) {
+        .search-add {
+            flex-direction: row;
+            gap: 10px;
+        }
+
+        .search-name {
+            width: 20%;
+            flex: 1;
+        }
+
+        .tab-func button {
+            width: max-content;
+        }
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 20px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: #28a745;
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(18px);
     }
     </style>
 </head>
@@ -191,11 +227,11 @@ $result = $conn->query($sql);
 
     <div class="card">
         <div class="header-card">
-            <h3 class="text-left">ข้อมูลลูกค้า</h3>
+            <h3 class="text-left">รายชื่อลูกค้า</h3>
             <div class="search-add">
                 <div class="tab-func">
                     <button type="button" class="btn btn-primary" onclick="window.location.href='add_user.php'">
-                        <i class="fa-solid fa-file-medical"></i> เพิ่มข้อมูลลูกค้า
+                        <i class="fa-solid fa-file-medical"></i> เพิ่มรายชื่อลูกค้า
                     </button>
                 </div>
                 <div class="tab-func">

@@ -1,5 +1,6 @@
 <?php
 session_start();
+include 'db.php';
 
 if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
     header("Location: login.php");
@@ -20,9 +21,8 @@ if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
 
     <style>
     body {
-        font-family: 'Arial', sans-serif;
-
-        height: 100vh;
+        font-family: 'Prompt', sans-serif;
+        height: auto;
         background: url('bg/sky.png') no-repeat center center/cover;
         margin: 0;
     }
@@ -57,13 +57,33 @@ if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
         border-radius: 15px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         width: 100%;
-        max-width: 800px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        max-width: 700px;
+        margin: 20px;
     }
 
+    h2 {
+        margin-bottom: 20px;
+        color: black;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    button {
+        width: 48%;
+        padding: 12px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .container-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 56px);
+    }
     .card:hover {
         transform: scale(1.05);
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
@@ -104,37 +124,38 @@ if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
             </ul>
         </div>
     </div>
-
-    <div class="container mt-5">
-        <h2 class="text-center mb-4">ผู้ดูแลระบบ</h2>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <a href="add_room.php" class="text-decoration-none">
-                    <div class="card text-center p-4 text-white">
-                        <h4>ตั้งค่าราคาห้องพัก</h4>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-6 mb-3">
-                <a href="dashboard_room.php" class="text-decoration-none">
-                    <div class="card text-center p-4  text-white">
-                        <h4>รายละเอียดห้องพัก</h4>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-6 mb-3">
-                <a href="dashboard_user.php" class="text-decoration-none">
-                    <div class="card text-center p-4 text-white">
-                        <h4>รายชื่อลูกค้า</h4>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-6 mb-3">
-                <a href="dashboard_booking.php" class="text-decoration-none">
-                    <div class="card text-center p-4 text-white">
-                        <h4>สถานะการจอง</h4>
-                    </div>
-                </a>
+    <div class="container-wrapper">
+        <div class="container">
+            <h2 class="text-center mb-4">ผู้ดูแลระบบ</h2>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <a href="add_room.php" class="text-decoration-none">
+                        <div class="card text-center p-4 text-white">
+                            <h4>ตั้งค่าราคาห้องพัก</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <a href="dashboard_room.php" class="text-decoration-none">
+                        <div class="card text-center p-4  text-white">
+                            <h4>รายละเอียดห้องพัก</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <a href="dashboard_user.php" class="text-decoration-none">
+                        <div class="card text-center p-4 text-white">
+                            <h4>รายชื่อลูกค้า</h4>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <a href="dashboard_booking.php" class="text-decoration-none">
+                        <div class="card text-center p-4 text-white">
+                            <h4>สถานะการจอง</h4>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

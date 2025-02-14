@@ -119,8 +119,8 @@ $conn->close();
 
     <style>
     body {
-        font-family: 'Arial', sans-serif;
-        height: 100vh;
+        font-family: 'Prompt', sans-serif;
+        height: auto;
         background: url('bg/sky.png') no-repeat center center/cover;
         margin: 0;
     }
@@ -145,7 +145,7 @@ $conn->close();
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 700px;
-        margin: 30px auto;
+        margin: 20px;
     }
 
     h2 {
@@ -186,7 +186,7 @@ $conn->close();
     .cancel-btn {
         background: #ccc;
         color: black;
-        margin-left: 10px;
+        margin-left: 5px;
     }
 
     .form-control {
@@ -376,7 +376,7 @@ $conn->close();
 
                 <br>
                 <div class="button-group">
-                    <button type="submit" class="submit-btn mt-3">บันทึกการเปลี่ยนแปลง</button>
+                    <button type="submit" class="submit-btn mt-3">บันทึก</button>
                     <button type="button" class="cancel-btn" onclick="window.history.back();">ยกเลิก</button>
                 </div>
             </form>

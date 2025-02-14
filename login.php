@@ -66,7 +66,7 @@ ob_end_flush();
     <title>เข้าสู่ระบบ</title>
     <style>
     body {
-        font-family: 'Arial', sans-serif;
+        font-family: 'Prompt', sans-serif;
         display: flex;
         justify-content: center;
         align-items: center;

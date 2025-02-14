@@ -34,9 +34,20 @@ $invoice_items = [$invoice];
 
     <style>
     body {
-        font-family: 'Arial', sans-serif;
+        font-family: 'Prompt', sans-serif;
         padding: 0;
         background-color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    .content-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-grow: 1;
     }
 
     .invoice-container {
@@ -45,8 +56,8 @@ $invoice_items = [$invoice];
         border-radius: 10px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         max-width: 700px;
-        margin: auto;
-        margin-top: 10%;
+        margin: 20px;
+        width: 100%;
     }
 
     h2,
@@ -108,89 +119,95 @@ $invoice_items = [$invoice];
 </head>
 
 <body>
-    <?php if ($userrole === 'admin'): ?>
-    <nav class="navbar navbar-dark bg-dark px-3">
-        <div class="d-flex w-100 justify-content-between align-items-center">
-            <i class="fa-solid fa-bars text-white" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
-                style="cursor: pointer;"></i>
-            <div class="nav-item">
-                <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
+
+    <body>
+        <?php if ($userrole === 'admin'): ?>
+        <nav class="navbar navbar-dark bg-dark px-3">
+            <div class="d-flex w-100 justify-content-between align-items-center">
+                <i class="fa-solid fa-bars text-white" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
+                    style="cursor: pointer;"></i>
+                <div class="nav-item">
+                    <a class="nav-link" href="logout.php"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Logout</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarMenu">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">รายการ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="list-unstyled">
+                    <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
+                                class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                    <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
+                                class="fa-regular fa-money-bill-1"></i> ตั้งค่าราคาห้องพัก</a></li>
+                    <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i
+                                class="fa-solid fa-bed"></i> รายละเอียดห้องพัก</a></li>
+                    <li><a href="dashboard_user.php" class="text-white text-decoration-none d-block py-2"><i
+                                class="fa-solid fa-user"></i> รายชื่อลูกค้า</a></li>
+                    <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
+                                class="fa-solid fa-suitcase"></i> สถานะการจอง</a></li>
+                    <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
+                                class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+                </ul>
             </div>
         </div>
-    </nav>
-
-    <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarMenu">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title">รายการ</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div class="offcanvas-body">
-            <ul class="list-unstyled">
-                <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-chart-line"></i> Dashboard</a></li>
-                <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-regular fa-money-bill-1"></i> ตั้งค่าราคาห้องพัก</a></li>
-                <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-bed"></i> รายละเอียดห้องพัก</a></li>
-                <li><a href="dashboard_user.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-user"></i> รายชื่อลูกค้า</a></li>
-                <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-suitcase"></i> สถานะการจอง</a></li>
-                <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
-            </ul>
-        </div>
-    </div>
-    <?php endif; ?>
-    <div class="invoice-container">
-        <h2>ใบแจ้งชำระเงิน #<?php echo htmlspecialchars($invoice['invoice_id']); ?></h2>
-        <p style="text-align: right;">เลขที่ใบแจ้งชำระเงิน:
-            #<?php echo htmlspecialchars($invoice['invoice_number']); ?></p>
-        <p style="text-align: right;">วันที่สั่งซื้อ:
-            <?php echo date("d/m/Y", strtotime($invoice['created_at'])); ?></p>
-        <p style="text-align: right;">วันครบกำหนด:
-            <?php echo date("d/m/Y", strtotime($invoice['checkin_date'])); ?></p>
-
-        <div class="customer-info">
-            <strong>ข้อมูลลูกค้า:</strong><br>
-            <?php echo htmlspecialchars($invoice['first_name'] . " " . $invoice['last_name']); ?><br>
-        </div>
-
-        <table class="table-container">
-            <tr>
-                <th>สินค้า/บริการ</th>
-                <th>จำนวน</th>
-                <th>ราคา</th>
-                <th>รวม</th>
-            </tr>
-            <?php
-        $total = 0;
-        foreach ($invoice_items as $item):
-            $subtotal = $item['room_count'] * $item['price'];
-            $total += $subtotal;
-        ?>
-            <tr>
-                <td><?php echo htmlspecialchars($item['room_type'] . " (เลขห้อง " . $item['room_number'] . ")"); ?></td>
-                <td><?php echo htmlspecialchars($item['room_count']); ?></td>
-                <td>฿<?php echo number_format($item['price'], 2); ?></td>
-                <td>฿<?php echo number_format($subtotal, 2); ?></td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
-
-        <div class="total-section">
-            <p>ยอดรวม: ฿<?php echo number_format($total, 2); ?></p>
-            <p>ภาษี (0%): ฿<?php echo number_format(0, 2); ?></p>
-            <p>ยอดรวมใบแจ้งชำระเงิน: ฿<?php echo number_format($total, 2); ?></p>
-            <p>ยอดเงินที่ชำระแล้ว: ฿<?php echo number_format($invoice['paid_amount'], 2); ?></p>
-        </div>
-        <?php if ($userrole === 'user'): ?>
-        <div class="text-center mt-4">
-            <a href="service.php" class="btn btn-primary">กลับไปที่การจอง</a>
-        </div>
         <?php endif; ?>
-    </div>
 
-</body>
+        <main class="content-wrapper">
+            <div class="invoice-container">
+                <h2>ใบแจ้งชำระเงิน #<?php echo htmlspecialchars($invoice['invoice_id']); ?></h2>
+                <p style="text-align: right;">เลขที่ใบแจ้งชำระเงิน:
+                    #<?php echo htmlspecialchars($invoice['invoice_number']); ?></p>
+                <p style="text-align: right;">วันที่สั่งซื้อ:
+                    <?php echo date("d/m/Y", strtotime($invoice['created_at'])); ?></p>
+                <p style="text-align: right;">วันครบกำหนด:
+                    <?php echo date("d/m/Y", strtotime($invoice['checkin_date'])); ?></p>
+
+                <div class="customer-info">
+                    <strong>ข้อมูลลูกค้า:</strong><br>
+                    <?php echo htmlspecialchars($invoice['first_name'] . " " . $invoice['last_name']); ?><br>
+                </div>
+
+                <table class="table-container">
+                    <tr>
+                        <th>สินค้า/บริการ</th>
+                        <th>จำนวน</th>
+                        <th>ราคา</th>
+                        <th>รวม</th>
+                    </tr>
+                    <?php
+                $total = 0;
+                foreach ($invoice_items as $item):
+                    $subtotal = $item['room_count'] * $item['price'];
+                    $total += $subtotal;
+                ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($item['room_type'] . " (เลขห้อง " . $item['room_number'] . ")"); ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($item['room_count']); ?></td>
+                        <td>฿<?php echo number_format($item['price'], 2); ?></td>
+                        <td>฿<?php echo number_format($subtotal, 2); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+
+                <div class="total-section">
+                    <p>ยอดรวม: ฿<?php echo number_format($total, 2); ?></p>
+                    <p>ภาษี (0%): ฿<?php echo number_format(0, 2); ?></p>
+                    <p>ยอดรวมใบแจ้งชำระเงิน: ฿<?php echo number_format($total, 2); ?></p>
+                    <p>ยอดเงินที่ชำระแล้ว: ฿<?php echo number_format($invoice['paid_amount'], 2); ?></p>
+                </div>
+                <?php if ($userrole === 'user'): ?>
+                <div class="text-center mt-4">
+                    <a href="service.php" class="btn btn-primary">กลับไปที่การจอง</a>
+                </div>
+                <?php endif; ?>
+            </div>
+        </main>
+    </body>
+
 
 </html>

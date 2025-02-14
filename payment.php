@@ -36,7 +36,7 @@ $booking = $result->fetch_assoc();
     <style>
     body {
         background-color: #f8f9fa;
-        font-family: 'Arial', sans-serif;
+        font-family: 'Prompt', sans-serif;
     }
 
     .checkout-container {
@@ -66,11 +66,13 @@ $booking = $result->fetch_assoc();
         background: #f1f1f1;
         padding: 15px;
         border-radius: 10px;
+        text-align: center;
     }
 
     .summary-box img {
-        width: 390px;
-        height: autp;
+        width: 100%;
+        max-width: 390px;
+        height: auto;
         border-radius: 5px;
     }
 
@@ -83,11 +85,16 @@ $booking = $result->fetch_assoc();
         font-size: 14px;
         color: #666;
     }
+
+    @media (max-width: 768px) {
+        .checkout-container {
+            margin: 0;
+        }
+    }
     </style>
 </head>
 
 <body>
-
     <div class="container checkout-container">
         <h3 class="text-center">ชำระเงิน</h3>
 
@@ -96,8 +103,8 @@ $booking = $result->fetch_assoc();
             <a href="logout.php" class="text-decoration-none">ออกจากระบบ</a>
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
+        <div class="row g-3">
+            <div class="col-lg-6 col-md-12">
                 <h5>รายละเอียดลูกค้า</h5>
                 <form id="customerForm" method="POST">
                     <div class="mb-3">
@@ -115,12 +122,10 @@ $booking = $result->fetch_assoc();
                         <input type="text" class="form-control" name="phone" value="<?= htmlspecialchars($phone) ?>"
                             disabled required>
                     </div>
-
                 </form>
-                <br>
-                <div class="summary-box">
 
-                    <img src="img/QR_code.jpg" alt="Product Image">
+                <div class="summary-box mt-3">
+                    <img src="img/QR_code.jpg" alt="QR Code">
                     <hr>
                     <div>
                         <form id="paymentForm" method="POST" enctype="multipart/form-data">
@@ -129,13 +134,11 @@ $booking = $result->fetch_assoc();
                             <input type="hidden" name="payment_slip"
                                 value="<?= htmlspecialchars($booking['payment_slip']) ?>">
                         </form>
-
                     </div>
-
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-lg-6 col-md-12">
                 <h5>สรุปรายการสั่งซื้อ</h5>
                 <div class="summary-box">
                     <div class="d-flex align-items-center">

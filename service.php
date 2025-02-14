@@ -101,60 +101,28 @@ if (!isset($_SESSION['user_id'])) {
         background-color: #fff;
     }
 
-    .hero {
-        position: relative;
-        text-align: center;
-        color: white;
-        background: url('bg/service.png') center/cover no-repeat;
-        height: 90vh;
-    }
-
-    .hero .overlay {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: none;
-    }
-
-    .hero h1 {
-        font-size: 5rem;
-        z-index: 1;
-    }
-
-    .hero p {
-        font-size: 2rem;
-        z-index: 1;
-    }
-
-    .hero-img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: -1;
-    }
-
-    .logo-img {
-        width: 100px;
-        height: 100px;
-    }
-
     .navbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 97%;
+        padding: 10px 20px;
+        background: #414678;
+        position: fixed;
         top: 0;
         left: 0;
-        padding: 10px 20px;
+        right: 0;
         z-index: 1000;
+    }
+
+    .logo-img {
+        width: 80px;
+        height: 80px;
     }
 
     .nav-links {
         list-style: none;
         display: flex;
-        gap: 20px;
+        gap: 5px;
         margin: 0;
         padding: 0;
     }
@@ -181,6 +149,7 @@ if (!isset($_SESSION['user_id'])) {
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 5rem;
     }
 
     .input-group-text {
@@ -205,6 +174,17 @@ if (!isset($_SESSION['user_id'])) {
         background-color: #0056b3;
     }
 
+    .btn-custom-search {
+        width: auto;
+        background-color: #007bff;
+        color: white;
+        font-size: 18px;
+    }
+
+    .btn-custom-search:hover {
+        background-color: #0056b3;
+    }
+
     .logo-container {
         display: flex;
         align-items: center;
@@ -214,7 +194,6 @@ if (!isset($_SESSION['user_id'])) {
         margin-bottom: 20px;
         font-size: 25px;
         margin-right: 10px;
-        color: black;
     }
 
     .hotel-listing {
@@ -235,7 +214,7 @@ if (!isset($_SESSION['user_id'])) {
 
     .hotel-image {
         width: 400px;
-        height: 300px;
+        height: auto;
         object-fit: cover;
     }
 
@@ -385,10 +364,10 @@ if (!isset($_SESSION['user_id'])) {
         color: #535d4c;
     }
 
-    footer nav a {
+    footer a {
         color: white;
-        margin: 0 15px;
         text-decoration: none;
+        font-size: 1.2rem;
     }
 
     footer {
@@ -398,7 +377,21 @@ if (!isset($_SESSION['user_id'])) {
         background: #414678;
         color: white;
         text-align: center;
-        padding: 10px;
+        padding: 15px;
+        flex-wrap: wrap;
+    }
+
+    footer nav {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-grow: 1;
+    }
+
+    footer .logo-footer {
+        display: flex;
+        justify-content: flex-end;
+        flex-shrink: 0;
     }
 
     nav {
@@ -414,28 +407,123 @@ if (!isset($_SESSION['user_id'])) {
     .tent-icon.selected {
         color: green !important;
     }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hotel-info {
+            padding: 10px;
+        }
+
+        .hotel-listing {
+            padding: 0px;
+            margin-bottom: 10px;
+        }
+
+        .hotel-info h3 {
+            font-size: 0.8rem;
+        }
+
+        .hotel-info p {
+            font-size: 0.8rem;
+            margin-bottom: 0;
+        }
+
+        .hotel-info label {
+            font-size: 0.8rem;
+        }
+
+        .hotel-info select {
+            font-size: 0.8rem;
+            padding: 5px;
+        }
+
+        .btn-custom {
+            font-size: 0.8rem;
+            padding: 5px;
+        }
+
+        .hotel-icon i {
+            font-size: 1rem;
+        }
+
+        .tent-number {
+            font-size: 0.8rem;
+        }
+        .tent-box {
+            margin-top: 5px;
+        }
+
+        .hotel-icon-container {
+            margin-bottom: 5px;
+        }
+        .hotel-icon {
+            gap: 5px;
+        }
+
+        .hotel-image {
+            width: 150px;
+            height: auto;
+        }
+
+        .logo-container {
+            padding-left: 10px;
+            padding-top: 10px;
+        }
+
+        .navbar {
+            padding: 5px;
+        }
+
+        .nav-links a {
+            font-size: 1rem;
+        }
+
+        .gallery,
+        .review {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        footer {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        footer nav {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .news-item img {
+            width: 300px;
+            height: 250px;
+            border-radius: 10px;
+        }
+
+    }
+
+    .fa-arrow-left {
+        color: white;
+    }
     </style>
 </head>
 
 <body>
-
-    <header class="hero">
-        <nav class="navbar">
-            <div class="logo-container">
-                <i class="fa-solid fa-arrow-left" onclick="goBack()"></i>
-                <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.php">Home</a></li>
-                <li><a href="service.php">Services</a></li>
-                <li><a href="contact.php">Contact</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                <li><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-        <div class="overlay"></div>
-    </header>
+    <nav class="navbar">
+        <div class="logo-container">
+            <i class="fa-solid fa-arrow-left" onclick="goBack()"></i>
+            <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.php">Home</a></li>
+            <li><a href="service.php">Services</a></li>
+            <li><a href="contact.php">Contact</a></li>
+            <?php if (isset($_SESSION['user_id'])): ?>
+            <li><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
 
     <div class="container">
         <div class="booking-container">
@@ -478,7 +566,7 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
                 </div>
                 <div class="btn-sesrch-book">
-                    <button type="submit" id="searchButton" class="btn btn-custom">🔍 ค้นหา</button>
+                    <button type="submit" id="searchButton" class="btn btn-custom-search">🔍 ค้นหา</button>
                 </div>
             </form>
         </div>
@@ -512,7 +600,7 @@ if (!isset($_SESSION['user_id'])) {
                     <?php endforeach; ?>
                 </select>
                 <div class="btn-reserve">
-                    <button type="button" class="btn btn-custom mt-2"
+                    <button type="button" class="btn btn-custom"
                         onclick="bookRoom('<?= htmlspecialchars($room['room_number']) ?>', '<?= htmlspecialchars($room['type']) ?>', '<?= htmlspecialchars($room['price']) ?>')">
                         จองห้องพัก
                     </button>
@@ -588,7 +676,7 @@ if (!isset($_SESSION['user_id'])) {
     </section>
 
     <section class="gallery">
-        <div class="gallery-item"><img src="img/img1.jpg" alt="วิวทะเลหมอก">
+        <div class="gallery-item"><img src="img/mg1.jpg" alt="วิวทะเลหมอก">
         </div>
         <div class="gallery-item"><img src="img/img2.jpg" alt="วิวต้นไม้ตอนเช้า">
         </div>

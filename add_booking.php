@@ -88,8 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <style>
     body {
-        font-family: 'Arial', sans-serif;
-        height: 100vh;
+        font-family: 'Prompt', sans-serif;
+        height: auto;
         background: url('bg/sky.png') no-repeat center center/cover;
         margin: 0;
     }
@@ -114,6 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 700px;
+        margin: 20px;
     }
 
     h2 {
@@ -154,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .cancel-btn {
         background: #ccc;
         color: black;
-        margin-left: 10px;
+        margin-left: 5px;
     }
 
     .form-control {
@@ -195,7 +196,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body">
-            <<ul class="list-unstyled">
+            <ul class="list-unstyled">
                 <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
                             class="fa-solid fa-chart-line"></i> Dashboard</a></li>
                 <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i

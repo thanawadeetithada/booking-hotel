@@ -88,15 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         justify-content: flex-start;
     }
 
-    .contact-section {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        padding: 50px;
-        background: rgba(255, 255, 255, 0.8);
-    }
-
     .contact-info {
+        padding-left: 10rem;
         width: 40%;
         color: black;
         text-align: left;
@@ -127,32 +120,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 20%;
         border-radius: 10px;
     }
-    .map iframe {
-        height: 450px;
-    }
 
     .map {
         text-align: center;
-    }
-
-    @media (max-width: 768px) {
-        .contact-section {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .contact-info,
-        .contact-form {
-            width: 90%;
-        }
-
-        .gallery {
-            flex-wrap: wrap;
-        }
-
-        .gallery img {
-            width: 45%;
-        }
     }
 
     body {
@@ -162,77 +132,82 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         background-color: #fff;
     }
 
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background: #414678;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
+
+    .logo-img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .nav-links {
+        list-style: none;
+        display: flex;
+        gap: 5px;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: white;
+        font-size: 1.2rem;
+        padding: 10px;
+        transition: 0.3s;
+    }
+
     .hero {
         position: relative;
         text-align: center;
         color: white;
-        background: url('bg/contact.jpg') center/cover no-repeat;
+        background: url('bg/main.jpg') center/cover no-repeat;
         height: 90vh;
-    }
-
-    .hero .overlay {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: none;
-    }
-
-    .hero h1 {
-        font-size: 5rem;
-        z-index: 1;
-    }
-
-    .hero p {
-        font-size: 1.5rem;
-        z-index: 1;
-    }
-
-    .logo-img {
-        width: 100px;
-        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 80px;
     }
 
     .btn {
-        z-index: 1;
         display: inline-block;
         background: #ffd936;
         color: black;
-        padding: 10px 20px;
-        text-decoration: none;
+        padding: 12px 24px;
         font-size: 1.5rem;
         border-radius: 5px;
-        margin-top: 40vh;
-    }
-    .gallery {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        padding: 40px;
+        margin-top: 20px;
+        text-decoration: none;
     }
 
-    .gallery-item img {
-        width: 300px;
-        height: 250px;
-        border-radius: 10px;
-    }
-
-    .gallery-item p {
-        color: #535d4c;
-    }
+    .gallery,
     .review {
         display: flex;
+        flex-wrap: wrap;
         justify-content: center;
         gap: 20px;
         padding: 40px;
+        text-align: center;
     }
 
+    .gallery-item img,
     .review-item img {
         width: 300px;
         height: auto;
         border-radius: 10px;
     }
 
+    .gallery-item p,
     .review-item p {
         color: #535d4c;
     }
@@ -247,16 +222,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         border-radius: 10px;
     }
 
-    .news-item p {
-        font-size: 1.5rem;
-    }
-
-    footer nav a {
-        color: white;
-        margin: 0 15px;
-        text-decoration: none;
-    }
-
     footer {
         display: flex;
         justify-content: space-between;
@@ -264,26 +229,82 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         background: #414678;
         color: white;
         text-align: center;
-        padding: 10px;
+        padding: 15px;
+        flex-wrap: wrap;
     }
 
-    nav {
+    footer nav {
         display: flex;
-        gap: 15px;
+        gap: 20px;
+        justify-content: center;
+        flex-grow: 1;
     }
 
-    .logo-footer img {
-        width: 100px;
-        height: auto;
+    footer .logo-footer {
+        display: flex;
+        justify-content: flex-end;
+        flex-shrink: 0;
+    }
+
+    footer a {
+        color: white;
+        text-decoration: none;
+        font-size: 1.2rem;
     }
 
     @media (max-width: 768px) {
-        .hero h1 {
-            font-size: 3rem;
+        .logo-container {
+            padding-left: 10px;
+            padding-top: 10px;
         }
 
-        .hero p {
+        .navbar {
+            padding: 5px;
+        }
+
+        .nav-links a {
+            font-size: 1rem;
+        }
+
+        .contact-section {
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            width: 90% !important;
+            margin-top: 3rem;
+        }
+
+        .contact-info {
+            padding-left: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .contact-info h2 {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .contact-info p {
+            font-size: 0.8rem !important;
+        }
+
+        .contact-form {
+            margin-top: 0.5rem;
+            width: 100%;
+            max-width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .contact-form h2 {
             font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .contact-form input {
+            width: 100%;
+            margin-bottom: 10px;
         }
 
         .gallery {
@@ -291,49 +312,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             align-items: center;
         }
 
-        .review-list {
+        .gallery img {
+            width: 80%;
+            margin-bottom: 10px;
+        }
+
+        footer {
             flex-direction: column;
             align-items: center;
         }
 
-        .news-item img {
-            width: 90%;
+        footer nav {
+            flex-direction: column;
+            gap: 10px;
         }
-    }
 
-    .navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 97%;
-        top: 0;
-        left: 0;
-        padding: 10px 20px;
-        z-index: 1000;
-    }
+        .chat-container {
+            height: auto;
+            max-height: 250px;
+            width: 100%;
+        }
 
-    .nav-links {
-        list-style: none;
-        display: flex;
-        gap: 20px;
-        margin: 0;
-        padding: 0;
-    }
+        .text-login-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
 
-    .nav-links li {
-        display: inline;
-    }
-
-    .nav-links a {
-        text-decoration: none;
-        color: white;
-        font-size: 1.2rem;
-        padding: 10px;
-        transition: 0.3s;
-    }
-
-    .nav-links a:hover {
-        border-radius: 5px;
+        .text-login {
+            font-size: 1rem;
+            margin-top: 10px;
+        }
     }
 
     .contact-section {
@@ -346,13 +355,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         padding: 30px;
         border-radius: 15px;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .contact-info {
-        width: 45%;
     }
 
     .contact-form {
@@ -373,8 +378,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         color: black;
     }
 
-    .contact-form input,
-    .contact-form textarea {
+    .contact-form input {
         width: 100%;
         padding: 12px;
         margin-bottom: 15px;
@@ -385,13 +389,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         height: fit-content;
     }
 
-    .contact-form textarea {
-        height: 120px;
-        resize: vertical;
-    }
-
     .contact-form button {
-        width: 20%;
+        width: fit-content;
         background: #ffd936;
         border: none;
         font-size: 1.2rem;
@@ -400,18 +399,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         transition: 0.3s;
         margin: 0;
         margin-bottom: 15px;
+        padding: 10px;
     }
 
     .contact-form button:hover {
         background: orange;
     }
 
-    a {
-        color: black;
-    }
-
     .social-icons {
         font-size: 1.5rem;
+    }
+
+    .social-icons a {
+        color: black;
     }
 
     .logo-container {
@@ -445,26 +445,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         align-items: center;
         width: 100%;
     }
+
+    .contact-info p {
+        font-size: 1.5rem;
+    }
+
+    .fa-arrow-left {
+        color: white;
+    }
     </style>
 </head>
 
 <body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <i class="fa-solid fa-arrow-left" onclick="goBack()"></i>
+            <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.php">Home</a></li>
+            <li><a href="service.php">Services</a></li>
+            <li><a href="contact.php">Contact</a></li>
+            <?php if (isset($_SESSION['user_id'])): ?>
+            <li><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+
     <header class="hero">
-        <nav class="navbar">
-            <div class="logo-container">
-                <i class="fa-solid fa-arrow-left" onclick="goBack()"></i>
-                <img class="logo-img" src="bg/logo.png" alt="ผาชมดาว">
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.php">Home</a></li>
-                <li><a href="service.php">Services</a></li>
-                <li><a href="contact.php">Contact</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                <li><a href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
-                <?php endif; ?>
-                </ul>
-        </nav>
-        <div class="overlay"></div>
         <h1></h1>
         <p style="margin-top: 150px"></p>
         <br>
@@ -489,8 +497,8 @@ if (isset($_SESSION['error'])) {
                 <p><strong>EMAIL:</strong> onjira.suwan@gmail.com</p>
                 <p><strong>PHONE NUMBER:</strong> 087 523 1709</p>
                 <div class="social-icons">
-                    <a href="#" style="margin-right: 20px;"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#"><i class="fa-solid fa-location-dot"></i></a>
+                    <a href="https://www.facebook.com/p/%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%9C%E0%B8%B2%E0%B8%8A%E0%B8%A1%E0%B8%94%E0%B8%B2%E0%B8%A7-100057387581971/" style="margin-right: 20px;"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="https://www.google.com/maps/dir//PJGR%2B5J6+%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%9C%E0%B8%B2%E0%B8%8A%E0%B8%A1%E0%B8%94%E0%B8%B2%E0%B8%A7+%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%A3%E0%B8%B1%E0%B8%81%E0%B9%84%E0%B8%97%E0%B8%A2+%E0%B8%9E%E0%B8%B4%E0%B8%A9%E0%B8%93%E0%B8%B8%E0%B9%82%E0%B8%A5%E0%B8%81+Chomphu,+Noen+Maprang+District,+Phitsanulok+65190/@16.7254889,100.6003282,13z/data=!4m8!4m7!1m0!1m5!1m1!1s0x312075e0cedf9253:0x8d6135e2caa50517!2m2!1d100.6415278!2d16.7254108?entry=ttu&g_ep=EgoyMDI1MDIxMC4wIKXMDSoASAFQAw%3D%3D"><i class="fa-solid fa-location-dot"></i></a>
                 </div>
             </div>
 
@@ -525,37 +533,28 @@ if (isset($_SESSION['error'])) {
         <h2>The world is a book and those who don't travel read only one page.</h2>
     </section>
 
-    <!-- Gallery Section -->
     <section class="gallery">
-        <img src="img/img1.jpg" alt="วิวภูเขา">
+        <img src="img/mg1.jpg" alt="วิวภูเขา">
         <img src="img/img2.jpg" alt="วิวตอนเช้า">
-        <img src="bg/contact.jpg" alt="พระอาทิตย์ตก">
-        <img src="bg/service.jpg" alt="เต็นท์พักแรม">
+        <img src="img/contact.jpg" alt="พระอาทิตย์ตก">
+        <img src="img/img4.jpg" alt="เต็นท์พักแรม">
     </section>
 
-    <!-- Google Map Section -->
     <section class="map">
-    <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d61904.84892639381!2d100.8276970622087!3d16.8951222984756!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xecb332e4401bdffd!2z4LiE4LiT4Liy4LiZ4Liq4Li04LiX4LiiIOC4quC4hOC4q-C4seC4mSDguJXguLPguIHguK3guIfguLTguKrguJvguLLguKXguYzguLLguJQ!5e0!3m2!1sth!2sth!4v1617861290194!5m2!1sth!2sth" 
-        width="80%" 
-        height="450" 
-        style="border:0;" 
-        allowfullscreen="" 
-        loading="lazy">
-    </iframe>
-</section>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d61904.84892639381!2d100.8276970622087!3d16.8951222984756!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xecb332e4401bdffd!2z4LiE4LiT4Liy4LiZ4Liq4Li04LiX4LiiIOC4quC4hOC4q-C4seC4mSDguJXguLPguIHguK3guIfguLTguKrguJvguLLguKXguYzguLLguJQ!5e0!3m2!1sth!2sth!4v1617861290194!5m2!1sth!2sth"
+            width="80%" height="450" style="border:0;" allowfullscreen="" loading="lazy">
+        </iframe>
+    </section>
 
-
-    <!-- Footer -->
     <footer>
-        <div></div>
-        <nav style="font-size: 25px;">
+        <nav>
             <a href="index.php">Home</a>
             <a href="service.php">Services</a>
             <a href="contact.php">Contact</a>
         </nav>
         <div class="logo-footer">
-            <img src="bg/logo.png" alt="โลโก้ผาชมดาว">
+            <img src="bg/logo.png" alt="โลโก้" width="80">
         </div>
     </footer>
     <script>

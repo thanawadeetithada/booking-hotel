@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>สมัครสมาชิก</title>
     <style>
     body {
-        font-family: 'Arial', sans-serif;
+        font-family: 'Prompt', sans-serif;
         display: flex;
         justify-content: center;
         align-items: center;
