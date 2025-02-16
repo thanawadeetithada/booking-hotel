@@ -89,6 +89,11 @@ $invoice_items = [$invoice];
         text-align: left;
     }
 
+    .table-container th:first-child,
+    .table-container td:first-child {
+        text-align: left;
+    }
+
     .table-container th {
         background: #e0e0e0;
     }
@@ -149,8 +154,12 @@ $invoice_items = [$invoice];
                                 class="fa-solid fa-user"></i> รายชื่อลูกค้า</a></li>
                     <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
                                 class="fa-solid fa-suitcase"></i> สถานะการจอง</a></li>
-                    <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
-                                class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+                    <li>
+                        <a href="view_messages.php" class="text-white text-decoration-none d-block py-2">
+                            <i class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน
+                            <span id="notification-badge" class="badge bg-danger" style="display: none;"></span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -158,47 +167,56 @@ $invoice_items = [$invoice];
 
         <main class="content-wrapper">
             <div class="invoice-container">
-                <h2>ใบแจ้งชำระเงิน #<?php echo htmlspecialchars($invoice['invoice_id']); ?></h2>
-                <p style="text-align: right;">เลขที่ใบแจ้งชำระเงิน:
-                    #<?php echo htmlspecialchars($invoice['invoice_number']); ?></p>
-                <p style="text-align: right;">วันที่สั่งซื้อ:
-                    <?php echo date("d/m/Y", strtotime($invoice['created_at'])); ?></p>
-                <p style="text-align: right;">วันครบกำหนด:
-                    <?php echo date("d/m/Y", strtotime($invoice['checkin_date'])); ?></p>
+                <h2>ใบเสร็จ</h2>
+                <p style="text-align: right;">เลขที่ใบเสร็จ <?php echo htmlspecialchars($invoice['invoice_number']); ?>
+                </p>
+                <p style="text-align: right;">วันที่ชำระเงิน
+                    <?php 
+    $date = new DateTime($invoice['created_at']);
+    echo $date->format("d-m-Y เวลา H:i"); 
+?>
+                </p>
 
                 <div class="customer-info">
-                    <strong>ข้อมูลลูกค้า:</strong><br>
+                    <strong>ข้อมูลลูกค้า</strong><br>
+                    ชื่อ นามสกุล
                     <?php echo htmlspecialchars($invoice['first_name'] . " " . $invoice['last_name']); ?><br>
                 </div>
 
                 <table class="table-container">
                     <tr>
-                        <th>สินค้า/บริการ</th>
-                        <th>จำนวน</th>
+                        <th>ประเภทที่พัก x คืน</th>
+                        <th>จำนวนคน</th>
                         <th>ราคา</th>
                         <th>รวม</th>
                     </tr>
                     <?php
                 $total = 0;
                 foreach ($invoice_items as $item):
-                    $subtotal = $item['room_count'] * $item['price'];
-                    $total += $subtotal;
                 ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($item['room_type'] . " (เลขห้อง " . $item['room_number'] . ")"); ?>
+                        <td><?php echo htmlspecialchars($item['room_type'] . " (เลขห้อง " . $item['room_number'] . ") x " . $item['nights'] . " คืน"); ?>
                         </td>
-                        <td><?php echo htmlspecialchars($item['room_count']); ?></td>
+                        <td><?php echo htmlspecialchars($item['guest_count']); ?></td>
                         <td>฿<?php echo number_format($item['price'], 2); ?></td>
-                        <td>฿<?php echo number_format($subtotal, 2); ?></td>
+                        <td>฿<?php echo htmlspecialchars($item['total_amount']); ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </table>
 
                 <div class="total-section">
-                    <p>ยอดรวม: ฿<?php echo number_format($total, 2); ?></p>
-                    <p>ภาษี (0%): ฿<?php echo number_format(0, 2); ?></p>
-                    <p>ยอดรวมใบแจ้งชำระเงิน: ฿<?php echo number_format($total, 2); ?></p>
-                    <p>ยอดเงินที่ชำระแล้ว: ฿<?php echo number_format($invoice['paid_amount'], 2); ?></p>
+                    <p>ยอดรวม: ฿<?php echo htmlspecialchars($item['total_amount']); ?></p>
+                    <p>ภาษี (7%): ฿<?= number_format($item['paid_amount'] - $item['total_amount'], 2) ?></p>
+                    <br>
+                    <p>ยอดรวมสุทธิ: ฿<?php echo htmlspecialchars($item['paid_amount']); ?></p>
+                    <p>ยอดชำระ: ฿<?php echo htmlspecialchars($item['paid_amount']); ?></p>
+                    <?php if ($item['status_payment'] === 'paid'): ?>
+                    <p style="color: red;">จ่ายแล้ว</p>
+                    <?php elseif ($item['status_payment'] === 'pending'): ?>
+                    <p style="color: red;">รอชำระเงิน</p>
+                    <?php else: ?>
+                    <p style="color: gray;">สถานะไม่ทราบ</p>
+                    <?php endif; ?>
                 </div>
                 <?php if ($userrole === 'user'): ?>
                 <div class="text-center mt-4">
@@ -207,7 +225,26 @@ $invoice_items = [$invoice];
                 <?php endif; ?>
             </div>
         </main>
-    </body>
+        <script>
+        function checkNotifications() {
+            fetch('check_notifications.php')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Notification Data:", data);
+                    let notificationBadge = document.getElementById("notification-badge");
+                    if (data.unread_count > 0) {
+                        notificationBadge.innerText = data.unread_count;
+                        notificationBadge.style.display = "inline-block";
+                    } else {
+                        notificationBadge.style.display = "none";
+                    }
+                })
+                .catch(error => console.error("Error fetching notifications:", error));
+        }
 
+        setInterval(checkNotifications, 1000);
+        checkNotifications();
+        </script>
+    </body>
 
 </html>

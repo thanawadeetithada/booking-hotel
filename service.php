@@ -15,7 +15,7 @@ $sql_rooms = "SELECT r.room_code, r.room_number, r.price, r.type, r.description,
         WHERE r.isshow = 1
         AND r.type = 'ห้องพัก'
         AND NOT EXISTS (
-            SELECT 1 FROM booking b
+            SELECT 1 FROM invoice b
             WHERE b.room_number = r.room_number
             AND (
                 (b.checkin_date BETWEEN '$startDateFormatted' AND '$endDateFormatted') OR
@@ -407,105 +407,121 @@ if (!isset($_SESSION['user_id'])) {
     .tent-icon.selected {
         color: green !important;
     }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .hotel-info {
-            padding: 10px;
+   
+    @media (max-width: 390px) {
+        .logo-img {
+            width: 50px;
+            height: 50px;
         }
-
-        .hotel-listing {
-            padding: 0px;
-            margin-bottom: 10px;
-        }
-
-        .hotel-info h3 {
-            font-size: 0.8rem;
-        }
-
-        .hotel-info p {
-            font-size: 0.8rem;
-            margin-bottom: 0;
-        }
-
-        .hotel-info label {
-            font-size: 0.8rem;
-        }
-
-        .hotel-info select {
-            font-size: 0.8rem;
-            padding: 5px;
-        }
-
-        .btn-custom {
-            font-size: 0.8rem;
-            padding: 5px;
-        }
-
-        .hotel-icon i {
+        .logo-container i {
             font-size: 1rem;
-        }
-
-        .tent-number {
-            font-size: 0.8rem;
-        }
-        .tent-box {
-            margin-top: 5px;
-        }
-
-        .hotel-icon-container {
-            margin-bottom: 5px;
-        }
-        .hotel-icon {
-            gap: 5px;
-        }
-
-        .hotel-image {
-            width: 150px;
-            height: auto;
-        }
-
-        .logo-container {
-            padding-left: 10px;
-            padding-top: 10px;
-        }
-
-        .navbar {
-            padding: 5px;
+            margin-bottom: 10px;
+            margin-right: 10px;
         }
 
         .nav-links a {
-            font-size: 1rem;
+            font-size: 0.8rem !important;
         }
-
-        .gallery,
-        .review {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        footer {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        footer nav {
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .news-item img {
-            width: 300px;
-            height: 250px;
-            border-radius: 10px;
-        }
-
     }
+        @media (max-width: 768px) {
+            .hotel-info {
+                padding: 10px;
+            }
 
-    .fa-arrow-left {
-        color: white;
-    }
+            .hotel-listing {
+                padding: 0px;
+                margin-bottom: 10px;
+            }
+
+            .hotel-info h3 {
+                font-size: 0.8rem;
+            }
+
+            .hotel-info p {
+                font-size: 0.8rem;
+                margin-bottom: 0;
+            }
+
+            .hotel-info label {
+                font-size: 0.8rem;
+            }
+
+            .hotel-info select {
+                font-size: 0.8rem;
+                padding: 5px;
+            }
+
+            .btn-custom {
+                font-size: 0.8rem;
+                padding: 5px;
+            }
+
+            .hotel-icon i {
+                font-size: 1rem;
+            }
+
+            .tent-number {
+                font-size: 0.8rem;
+            }
+
+            .tent-box {
+                margin-top: 5px;
+            }
+
+            .hotel-icon-container {
+                margin-bottom: 5px;
+            }
+
+            .hotel-icon {
+                gap: 5px;
+            }
+
+            .hotel-image {
+                width: 150px;
+                height: auto;
+            }
+
+            .logo-container {
+                padding-left: 10px;
+                padding-top: 10px;
+            }
+
+            .navbar {
+                padding: 5px;
+            }
+
+            .nav-links a {
+                font-size: 1rem;
+            }
+
+            .gallery,
+            .review {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            footer {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            footer nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .news-item img {
+                width: 300px;
+                height: 250px;
+                border-radius: 10px;
+            }
+
+        }
+
+        .fa-arrow-left {
+            color: white;
+        }
     </style>
 </head>
 
@@ -541,10 +557,10 @@ if (!isset($_SESSION['user_id'])) {
                             value="<?= isset($_POST['endDate']) ? htmlspecialchars($_POST['endDate']) : '' ?>">
                     </div>
                 </div>
-                <div class="row g-3 mb-3">
+                <div class="row g-3 mb-3 justify-content-center">
                     <div class="col-md-6">
-                        <label class="form-label">👨‍👩‍👧‍👦 จำนวนผู้ใหญ่</label>
-                        <div class="input-group">
+                        <label class="form-label">👨‍👩‍👧‍👦 จำนวนคนเข้าพัก</label>
+                        <div class="input-group text-center">
                             <button type="button" class="btn btn-outline-secondary minus-btn"
                                 data-target="adults">-</button>
                             <input type="text" id="adults" name="adults" class="form-control small-input"
@@ -553,17 +569,7 @@ if (!isset($_SESSION['user_id'])) {
                                 data-target="adults">+</button>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">🏨 จำนวนห้อง</label>
-                        <div class="input-group">
-                            <button type="button" class="btn btn-outline-secondary minus-btn"
-                                data-target="rooms">-</button>
-                            <input type="text" id="rooms" name="rooms" class="form-control small-input"
-                                value="<?= isset($_POST['rooms']) ? htmlspecialchars($_POST['rooms']) : '1' ?>">
-                            <button type="button" class="btn btn-outline-secondary plus-btn"
-                                data-target="rooms">+</button>
-                        </div>
-                    </div>
+
                 </div>
                 <div class="btn-sesrch-book">
                     <button type="submit" id="searchButton" class="btn btn-custom-search">🔍 ค้นหา</button>
@@ -787,7 +793,6 @@ if (!isset($_SESSION['user_id'])) {
                         room_number: roomNumber,
                         room_type: roomType,
                         guest_count: guestCount,
-                        room_count: roomCount,
                         price: price,
                         description: description,
                         payment_method: paymentMethod
@@ -852,7 +857,6 @@ if (!isset($_SESSION['user_id'])) {
                         room_number: roomNumber,
                         room_type: roomType,
                         guest_count: guestCount,
-                        room_count: roomCount,
                         price: price,
                         description: description,
                         payment_method: paymentMethod

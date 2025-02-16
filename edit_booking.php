@@ -31,12 +31,12 @@ $slip_path = (!empty($booking['payment_slip']) && file_exists($booking['payment_
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
+    $email= $_POST['email'];
     $checkin_date = $_POST['checkin_date'];
     $checkout_date = $_POST['checkout_date'];
     $room_number = $_POST['room_number'];
     $room_type = $_POST['room_type'];
     $guest_count = $_POST['guest_count'];
-    $room_count = $_POST['room_count'];
     $price = $_POST['price'];
     $description = $_POST['description'];
     $payment_method = $_POST['payment_method'];
@@ -48,16 +48,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nights = $interval->days;
 
     if ($nights <= 0) {
-        die("วันที่เช็คเอาท์ต้องมากกว่าวันที่เช็คอิน");
+        die("กรุณาจองอย่างน้อย 1 คืน");
     }
 
     if ($room_type == "เต็นท์") {
-        $total_amount = $price * $guest_count * $room_count * $nights;
+        $total_amount = $price * $guest_count  * $nights;
     } else {
-        $total_amount = $price * $room_count * $nights;
+        $total_amount = $price * $nights;
     }
 
-    $paid_amount = ($status_payment == 'paid') ? $total_amount : 0;
+    $paid_amount = $total_amount * (1 + (7/100));
 
 $payment_slip = $booking['payment_slip'];
 if ($payment_method == "โอนเงิน") {
@@ -82,20 +82,21 @@ if ($payment_method == "โอนเงิน") {
 }
 
     $sql_update = "UPDATE invoice SET 
-    first_name = ?, last_name = ?, checkin_date = ?, checkout_date = ?, room_number = ?, 
-    room_type = ?, guest_count = ?, room_count = ?, price = ?, description = ?, 
+    first_name = ?, last_name = ?, checkin_date = ?, checkout_date = ?, email = ?, room_number = ?, 
+    room_type = ?, guest_count = ?, price = ?, description = ?, 
     payment_method = ?, status_payment = ?, payment_slip = ?, total_amount = ?, paid_amount = ? 
     WHERE invoice_id = ?";
 
 $stmt_update = $conn->prepare($sql_update);
-$stmt_update->bind_param("ssssssiidssssddi",
-    $first_name, $last_name, $checkin_date, $checkout_date, $room_number,
-    $room_type, $guest_count, $room_count, $price, $description,
+$stmt_update->bind_param("sssssssidssssddi",
+    $first_name, $last_name, $checkin_date, $checkout_date, $email, $room_number,
+    $room_type, $guest_count, $price, $description,
     $payment_method, $status_payment, $payment_slip, $total_amount, $paid_amount, $invoice_id
 );
 
 if ($stmt_update->execute()) {
-    echo "<script>alert('อัปเดตข้อมูลการจองสำเร็จ!'); window.location.href='dashboard_booking.php';</script>";
+    echo "<script>alert('อัปเดตข้อมูลการจองสำเร็จ!'); 
+          window.location.href='generate_pdf.php?invoice_id={$invoice_id}';</script>";
 } else {
     echo "เกิดข้อผิดพลาด: " . $stmt_update->error;
 }
@@ -237,8 +238,12 @@ $conn->close();
                             class="fa-solid fa-user"></i> รายชื่อลูกค้า</a></li>
                 <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
                             class="fa-solid fa-suitcase"></i> สถานะการจอง</a></li>
-                <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+                <li>
+                    <a href="view_messages.php" class="text-white text-decoration-none d-block py-2">
+                        <i class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน
+                        <span id="notification-badge" class="badge bg-danger" style="display: none;"></span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -257,6 +262,19 @@ $conn->close();
                         <label>นามสกุลผู้จอง</label>
                         <input type="text" name="last_name" class="form-control" value="<?= $booking['last_name'] ?>"
                             required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>จำนวนผู้เข้าพัก:</label>
+                        <input type="number" name="guest_count" class="form-control"
+                            value="<?= $booking['guest_count'] ?>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input class="form-control" type="email" id="email" name="email"
+                            value="<?= $booking['email'] ?>" required>
                     </div>
                 </div>
 
@@ -332,19 +350,6 @@ $conn->close();
                                 เงินสด
                             </option>
                         </select>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label>จำนวนผู้เข้าพัก:</label>
-                        <input type="number" name="guest_count" class="form-control"
-                            value="<?= $booking['guest_count'] ?>" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label>จำนวนห้อง:</label>
-                        <input type="number" name="room_count" class="form-control"
-                            value="<?= $booking['room_count'] ?>" required>
                     </div>
                 </div>
 
@@ -454,6 +459,25 @@ $conn->close();
             xhr.send("room_number=" + encodeURIComponent(roomNumber));
         }
     }
+
+    function checkNotifications() {
+        fetch('check_notifications.php')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Notification Data:", data);
+                let notificationBadge = document.getElementById("notification-badge");
+                if (data.unread_count > 0) {
+                    notificationBadge.innerText = data.unread_count;
+                    notificationBadge.style.display = "inline-block";
+                } else {
+                    notificationBadge.style.display = "none";
+                }
+            })
+            .catch(error => console.error("Error fetching notifications:", error));
+    }
+
+    setInterval(checkNotifications, 1000);
+    checkNotifications();
     </script>
 
 </body>

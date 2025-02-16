@@ -10,12 +10,12 @@ if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
+    $email= $_POST['email'];
     $checkin_date = $_POST['checkin_date'];
     $checkout_date = $_POST['checkout_date'];
     $room_number = $_POST['room_number'];
     $room_type = $_POST['type'];
     $guest_count = $_POST['guest_count'];
-    $room_count = $_POST['room_count'];
     $price = $_POST['price'];
     $description = $_POST['description'];
     $payment_method = $_POST['payment_method'];
@@ -27,16 +27,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nights = $interval->days;
     
     if ($nights <= 0) {
-        die("วันที่เช็คเอาท์ต้องมากกว่าวันที่เช็คอิน");
+        die("กรุณาจองอย่างน้อย 1 คืน");
     }
     
     if ($room_type == "เต็นท์") {
-        $total_amount = $price * $guest_count * $room_count * $nights;
+        $total_amount = $price * $guest_count  * $nights;
     } else {
-        $total_amount = $price * $room_count * $nights;
+        $total_amount = $price * $nights;
     }
     
-    $paid_amount = ($status_payment == 'paid') ? $total_amount : 0;
+    $paid_amount = $total_amount * (1 + (7/100));
     
     $payment_slip = NULL;
     if ($payment_method == "โอนเงิน" && isset($_FILES["imgpayment"]["name"]) && $_FILES["imgpayment"]["size"] > 0) {
@@ -50,23 +50,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
         $stmt_invoice = $conn->prepare("INSERT INTO invoice 
-        (invoice_number, first_name, last_name, checkin_date, checkout_date, room_number, room_type, 
-        guest_count, room_count, price, description, payment_method, status_payment, payment_slip, 
+        (invoice_number, first_name, last_name, email, checkin_date, checkout_date, room_number, room_type, 
+        guest_count, price, description, payment_method, status_payment, payment_slip, 
         total_amount, paid_amount) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
-        $stmt_invoice->bind_param("sssssssiidssssdd", 
-            $invoice_number, $first_name, $last_name, $checkin_date, $checkout_date,
-            $room_number, $room_type, $guest_count, $room_count, $price, 
+        $stmt_invoice->bind_param("ssssssssidssssdd", 
+            $invoice_number, $first_name, $last_name, $email, $checkin_date, $checkout_date,
+            $room_number, $room_type, $guest_count, $price, 
             $description, $payment_method, $status_payment, $payment_slip, 
             $total_amount, $paid_amount);
     
-        if ($stmt_invoice->execute()) {
-            echo "<script>alert('เพิ่มข้อมูลการจองและออกใบแจ้งหนี้สำเร็จ!'); window.location.href='dashboard_booking.php';</script>";
-        } else {
-            echo "เกิดข้อผิดพลาดในการบันทึกใบแจ้งหนี้: " . $stmt_invoice->error;
-        }
-    
+            if ($stmt_invoice->execute()) {
+                $invoice_id = $conn->insert_id;
+                echo "<script>alert('เพิ่มข้อมูลการจองและออกใบเสร็จสำเร็จ!');
+                 window.location.href='generate_pdf.php?invoice_id={$invoice_id}';</script>";
+            } else {
+                echo "เกิดข้อผิดพลาดในการบันทึกใบเสร็จ: " . $stmt_invoice->error;
+            }
+            
         $stmt_invoice->close();
 
     $stmt->close();
@@ -207,8 +209,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             class="fa-solid fa-user"></i> รายชื่อลูกค้า</a></li>
                 <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
                             class="fa-solid fa-suitcase"></i> สถานะการจอง</a></li>
-                <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+                <li>
+                    <a href="view_messages.php" class="text-white text-decoration-none d-block py-2">
+                        <i class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน
+                        <span id="notification-badge" class="badge bg-danger" style="display: none;"></span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -231,12 +237,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="checkin_date" class="form-label">วันที่เช็คอิน</label>
-                        <input type="date" id="checkin_date" name="checkin_date" class="form-control" required>
+                        <label for="guest_count " class="form-label">จำนวนผู้เข้าพัก</label>
+                        <input class="form-control" type="number" id="guest_count" name="guest_count"
+                            placeholder="จำนวนผู้เข้าพัก" required>
                     </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input class="form-control" type="email" id="email" name="email" placeholder="Email" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="checkout_date" class="form-label">วันที่เช็คเอาท์</label>
                         <input type="date" id="checkout_date" name="checkout_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="checkin_date" class="form-label">วันที่เช็คอิน</label>
+                        <input type="date" id="checkin_date" name="checkin_date" class="form-control" required>
                     </div>
                 </div>
 
@@ -281,20 +299,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </select>
                     </div>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="guest_count " class="form-label">จำนวนผู้เข้าพัก</label>
-                        <input class="form-control" type="number" id="guest_count" name="guest_count"
-                            placeholder="จำนวนผู้เข้าพัก" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="room_count" class="form-label">จำนวนห้อง</label>
-                        <input class="form-control" type="number" id="room_count" name="room_count"
-                            placeholder="จำนวนห้องพัก" required>
-
-                    </div>
-                </div>
-
 
 
                 <div class="row mb-3">
@@ -388,6 +392,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             priceInput.value = "";
         }
     });
+
+    function checkNotifications() {
+        fetch('check_notifications.php')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Notification Data:", data);
+                let notificationBadge = document.getElementById("notification-badge");
+                if (data.unread_count > 0) {
+                    notificationBadge.innerText = data.unread_count;
+                    notificationBadge.style.display = "inline-block";
+                } else {
+                    notificationBadge.style.display = "none";
+                }
+            })
+            .catch(error => console.error("Error fetching notifications:", error));
+    }
+
+    setInterval(checkNotifications, 1000);
+    checkNotifications();
     </script>
 </body>
 

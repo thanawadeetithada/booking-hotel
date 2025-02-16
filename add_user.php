@@ -237,8 +237,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             class="fa-solid fa-user"></i> รายชื่อลูกค้า</a></li>
                 <li><a href="dashboard_booking.php" class="text-white text-decoration-none d-block py-2"><i
                             class="fa-solid fa-suitcase"></i> สถานะการจอง</a></li>
-                <li><a href="view_messages.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน</a></li>
+                <li>
+                    <a href="view_messages.php" class="text-white text-decoration-none d-block py-2">
+                        <i class="fa-solid fa-comment"></i> ข้อความจากผู้ใช้งาน
+                        <span id="notification-badge" class="badge bg-danger" style="display: none;"></span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -302,6 +306,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </form>
         </div>
     </div>
+    <script>
+    function checkNotifications() {
+        fetch('check_notifications.php')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Notification Data:", data);
+                let notificationBadge = document.getElementById("notification-badge");
+                if (data.unread_count > 0) {
+                    notificationBadge.innerText = data.unread_count;
+                    notificationBadge.style.display = "inline-block";
+                } else {
+                    notificationBadge.style.display = "none";
+                }
+            })
+            .catch(error => console.error("Error fetching notifications:", error));
+    }
+
+    setInterval(checkNotifications, 1000);
+    checkNotifications();
+    </script>
 </body>
 
 </html>

@@ -60,22 +60,23 @@ if (!$update_stmt->execute()) {
     exit();
 }
 
+$nights = $booking['nights'];
+
 $insert_invoice_sql = "INSERT INTO invoice 
-        (invoice_number, first_name, last_name, checkin_date, checkout_date, room_number, 
-         room_type, guest_count, room_count, price, description, payment_method, 
-         status_payment, payment_slip, total_amount, paid_amount, created_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        (invoice_number, first_name, last_name, checkin_date, checkout_date, email, room_number, 
+         room_type, guest_count, price, description, payment_method, 
+         status_payment, payment_slip, nights, total_amount, paid_amount, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
 $insert_stmt = $conn->prepare($insert_invoice_sql);
 $status_payment = "paid";
-$paid_amount = $booking['total_amount'];
-
-$insert_stmt->bind_param("ssssssssddssssdd", 
+$paid_amount = $booking['total_amount'] * (1 + (7/100));
+$insert_stmt->bind_param("sssssssssdssssidd", 
     $invoice_number, $booking['first_name'], $booking['last_name'], 
-    $booking['checkin_date'], $booking['checkout_date'], $booking['room_number'], 
-    $booking['room_type'], $booking['guest_count'], $booking['room_count'], 
+    $booking['checkin_date'], $booking['checkout_date'], $booking['email'], $booking['room_number'], 
+    $booking['room_type'], $booking['guest_count'],
     $booking['price'], $booking['description'], $booking['payment_method'], 
-    $status_payment, $target_file, $booking['total_amount'], $paid_amount
+    $status_payment, $target_file, $nights, $booking['total_amount'], $paid_amount
 );
 
 if (!$insert_stmt->execute()) {

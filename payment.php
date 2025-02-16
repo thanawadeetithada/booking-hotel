@@ -91,18 +91,58 @@ $booking = $result->fetch_assoc();
             margin: 0;
         }
     }
+
+    @media (max-width: 697px) {
+        .logout-date {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logout-date .alert {
+            width: 100% !important;
+        }
+
+    }
+
+    .text-total {
+        text-align: left;
+    }
+
+    .logout-date {
+        display: flex;
+    }
+
+    .logout-date .alert {
+        width: 50%;
+    }
+
+    .date-text {
+        text-align: right;
+    }
+
+    .text-center {
+        margin-bottom: 1.5rem;
+    }
     </style>
 </head>
 
 <body>
     <div class="container checkout-container">
         <h3 class="text-center">ชำระเงิน</h3>
+        <div class="logout-date">
+            <div class="alert alert-light">
+                <strong>ล็อกอินด้วย</strong> <?php echo htmlspecialchars($email); ?>
+                <a href="logout.php" class="text-decoration-none">ออกจากระบบ</a>
+            </div>
+            <div class="alert date-text">
+                <strong>วันที่ </strong>
+                <?php 
+    $date = new DateTime($booking['created_at']);
+    echo $date->format("d-m-Y เวลา H:i"); 
+?>
 
-        <div class="alert alert-light">
-            <strong>ล็อกอินด้วย</strong> <?php echo htmlspecialchars($email); ?>
-            <a href="logout.php" class="text-decoration-none">ออกจากระบบ</a>
+            </div>
         </div>
-
         <div class="row g-3">
             <div class="col-lg-6 col-md-12">
                 <h5>รายละเอียดลูกค้า</h5>
@@ -128,7 +168,7 @@ $booking = $result->fetch_assoc();
                     <img src="img/QR_code.jpg" alt="QR Code">
                     <hr>
                     <div>
-                        <form id="paymentForm" method="POST" enctype="multipart/form-data">
+                        <form style="text-align: left;" id="paymentForm" method="POST" enctype="multipart/form-data">
                             <label for="payment_proof">หากชำระเรียบร้อยแล้ว โปรดแนบหลักฐานการชำระเงิน</label>
                             <input type="file" name="payment_proof" id="payment_proof" required>
                             <input type="hidden" name="payment_slip"
@@ -141,22 +181,28 @@ $booking = $result->fetch_assoc();
             <div class="col-lg-6 col-md-12">
                 <h5>สรุปรายการสั่งซื้อ</h5>
                 <div class="summary-box">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-left">
                         <div class="ms-3">
-                            <p class="mb-0"><strong><?= htmlspecialchars($booking['room_type']) ?></strong></p>
-                            <p class="mb-0">จำนวนห้อง <?= htmlspecialchars($booking['room_count']) ?> x จำนวนคนเข้าพัก
-                                <?= htmlspecialchars($booking['guest_count']) ?></p>
+                            <p style="width: fit-content;" class="mb-0">
+                                <strong><?= htmlspecialchars($booking['room_type']) ?></strong>
+                            </p>
+                            <p class="mb-0">จำนวนคนเข้าพัก
+                                <?= htmlspecialchars($booking['guest_count']) ?> คน</p>
                         </div>
                     </div>
                     <hr>
-                    <div>
+                    <div class="text-total">
                         <p><strong>ยอดรวม:</strong> ฿<?= htmlspecialchars($booking['total_amount']) ?></p>
-                        <p><strong>ภาษี:</strong> ฿0.00</p>
-                        <p><strong>รวมทั้งหมด:</strong> ฿<?= htmlspecialchars($booking['total_amount']) ?></p>
+                        <p><strong>ภาษี (7%):</strong>
+                            ฿<?= number_format($booking['paid_amount'] - $booking['total_amount'], 2) ?>
+                        </p>
+                        <p><strong>รวมทั้งหมด:</strong> ฿<?= htmlspecialchars($booking['paid_amount']) ?></p>
                     </div>
                     <hr>
-                    <p><strong>ชำระเงินตอนนี้:</strong> ฿<?= htmlspecialchars($booking['total_amount']) ?></p>
-                    <p><strong>ชำระเงินภายหลัง:</strong> ฿0.00</p>
+                    <div class="text-total">
+                        <p><strong>ชำระเงินตอนนี้:</strong> ฿<?= htmlspecialchars($booking['paid_amount']) ?></p>
+                        <p><strong>ชำระเงินภายหลัง:</strong> ฿0.00</p>
+                    </div>
                     <button id="paymentBtn" class="btn btn-black mt-3">ชำระเงิน</button>
                     <div class="locked-payment">
                         🔒 ชำระเงิน
@@ -186,8 +232,8 @@ $booking = $result->fetch_assoc();
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === "success") {
-                        alert("ชำระเงินสำเร็จ!");
-                        window.location.href = `receipt_booking.php?invoice_id=${data.invoice_id}`;
+                        alert("ชำระเงินสำเร็จ! กำลังส่งใบเสร็จไปยังอีเมลของคุณ...");
+                        window.location.href = `generate_pdf.php?invoice_id=${data.invoice_id}`;
                     } else {
                         alert("กรุณาแนบสลิป");
                     }

@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     .contact-info {
-        padding-left: 10rem;
+        padding-left: 4rem;
         width: 40%;
         color: black;
         text-align: left;
@@ -252,7 +252,87 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         font-size: 1.2rem;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 390px) {
+
+        .chat-container {
+            height: 100px;
+        }
+
+        .contact-section {
+            margin-top: 1.7rem !important;
+            padding: 10px !important;
+        }
+
+        .logo-img {
+            width: 50px !important;
+            height: 50px !important;
+        }
+
+        h2 {
+            font-size: 0.8rem !important;
+            margin-bottom: 0px !important;
+        }
+
+        .social-icons {
+            font-size: 1rem !important;
+        }
+
+        p {
+            margin-bottom: 2px !important;
+        }
+
+        .contact-form {
+            padding-top: 20px !important;
+            padding-bottom: 20px !important;
+        }
+
+        .container {
+            margin-top: 5px !important;
+        }
+
+        .contact-form input {
+            padding: 5px !important;
+            font-size: 0.8rem !important;
+            margin-bottom: 0px !important;
+        }
+
+        .contact-form button {
+            padding: 5px !important;
+            font-size: 0.8rem !important;
+        }
+
+        .fa-facebook,
+        .fa-location-dot,
+        .fa-arrow-left {
+            font-size: 0.8rem !important;
+        }
+
+        .logo-container i {
+            margin-bottom: 10px !important;
+        }
+        .text-input {
+            margin-top: 10px !important;
+        }
+
+        .message.user {
+            padding: 5px;
+            font-size: 0.8rem;
+        }
+
+        .message.admin {
+            padding: 5px;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 412px) {
+        .contact-section {
+            padding-bottom: 10px !important;
+            padding-top: 10px !important;
+        }
+    }
+
+    @media (max-width: 1152px) {
         .logo-container {
             padding-left: 10px;
             padding-top: 10px;
@@ -281,7 +361,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .contact-info h2 {
-            font-size: 1rem;
+            font-size: 0.8rem;
             font-weight: bold;
         }
 
@@ -298,7 +378,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .contact-form h2 {
-            font-size: 1.5rem;
+            font-size: 0.8rem !important;
             margin-bottom: 15px;
         }
 
@@ -328,8 +408,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .chat-container {
-            height: auto;
-            max-height: 250px;
+            max-height: 200px;
+            min-height: 200px;
             width: 100%;
         }
 
@@ -497,8 +577,11 @@ if (isset($_SESSION['error'])) {
                 <p><strong>EMAIL:</strong> onjira.suwan@gmail.com</p>
                 <p><strong>PHONE NUMBER:</strong> 087 523 1709</p>
                 <div class="social-icons">
-                    <a href="https://www.facebook.com/p/%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%9C%E0%B8%B2%E0%B8%8A%E0%B8%A1%E0%B8%94%E0%B8%B2%E0%B8%A7-100057387581971/" style="margin-right: 20px;"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="https://www.google.com/maps/dir//PJGR%2B5J6+%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%9C%E0%B8%B2%E0%B8%8A%E0%B8%A1%E0%B8%94%E0%B8%B2%E0%B8%A7+%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%A3%E0%B8%B1%E0%B8%81%E0%B9%84%E0%B8%97%E0%B8%A2+%E0%B8%9E%E0%B8%B4%E0%B8%A9%E0%B8%93%E0%B8%B8%E0%B9%82%E0%B8%A5%E0%B8%81+Chomphu,+Noen+Maprang+District,+Phitsanulok+65190/@16.7254889,100.6003282,13z/data=!4m8!4m7!1m0!1m5!1m1!1s0x312075e0cedf9253:0x8d6135e2caa50517!2m2!1d100.6415278!2d16.7254108?entry=ttu&g_ep=EgoyMDI1MDIxMC4wIKXMDSoASAFQAw%3D%3D"><i class="fa-solid fa-location-dot"></i></a>
+                    <a href="https://www.facebook.com/p/%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%9C%E0%B8%B2%E0%B8%8A%E0%B8%A1%E0%B8%94%E0%B8%B2%E0%B8%A7-100057387581971/"
+                        style="margin-right: 20px;"><i class="fa-brands fa-facebook"></i></a>
+                    <a
+                        href="https://www.google.com/maps/dir//PJGR%2B5J6+%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%9C%E0%B8%B2%E0%B8%8A%E0%B8%A1%E0%B8%94%E0%B8%B2%E0%B8%A7+%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%A3%E0%B8%B1%E0%B8%81%E0%B9%84%E0%B8%97%E0%B8%A2+%E0%B8%9E%E0%B8%B4%E0%B8%A9%E0%B8%93%E0%B8%B8%E0%B9%82%E0%B8%A5%E0%B8%81+Chomphu,+Noen+Maprang+District,+Phitsanulok+65190/@16.7254889,100.6003282,13z/data=!4m8!4m7!1m0!1m5!1m1!1s0x312075e0cedf9253:0x8d6135e2caa50517!2m2!1d100.6415278!2d16.7254108?entry=ttu&g_ep=EgoyMDI1MDIxMC4wIKXMDSoASAFQAw%3D%3D"><i
+                            class="fa-solid fa-location-dot"></i></a>
                 </div>
             </div>
 
@@ -508,7 +591,7 @@ if (isset($_SESSION['error'])) {
                     <div class="chat-container <?php echo isset($_SESSION['user_id']) ? '' : 'blur'; ?>" id="chatBox">
                     </div>
 
-                    <div class="d-flex mt-3">
+                    <div class="text-input d-flex mt-3">
                         <input type="hidden" id="user_id"
                             value="<?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ''; ?>">
 
