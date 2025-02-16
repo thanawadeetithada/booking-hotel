@@ -68,7 +68,11 @@ session_start();
         justify-content: center;
         align-items: center;
         padding-top: 80px;
+        margin-top: 5rem;
     }
+     .hero p {
+        margin-top: 150px
+     }
 
     .btn {
         display: inline-block;
@@ -169,6 +173,27 @@ session_start();
             flex-direction: column;
             gap: 10px;
         }
+
+        .navbar {
+            padding: 5px;
+        }
+
+        .nav-links a {
+            font-size: 1rem;
+        }
+
+        .hero {
+            height: 25vh !important;
+        }
+
+        .hero p {
+            margin-top: 0px !important;
+        }
+        .btn {
+            margin-top: 0px !important;
+            padding: 10px;
+            font-size: 1rem;
+        }
     }
     </style>
 </head>
@@ -188,7 +213,7 @@ session_start();
 
     <header class="hero">
         <h1></h1>
-        <p style="margin-top: 150px"></p>
+        <p></p>
         <br>
         <?php if (!isset($_SESSION['user_id'])): ?>
         <a href="login.php" class="btn">เข้าสู่ระบบ</a>

@@ -149,7 +149,6 @@ if (!isset($_SESSION['user_id'])) {
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        margin-top: 5rem;
     }
 
     .input-group-text {
@@ -407,12 +406,13 @@ if (!isset($_SESSION['user_id'])) {
     .tent-icon.selected {
         color: green !important;
     }
-   
+
     @media (max-width: 390px) {
         .logo-img {
             width: 50px;
             height: 50px;
         }
+
         .logo-container i {
             font-size: 1rem;
             margin-bottom: 10px;
@@ -423,105 +423,124 @@ if (!isset($_SESSION['user_id'])) {
             font-size: 0.8rem !important;
         }
     }
-        @media (max-width: 768px) {
-            .hotel-info {
-                padding: 10px;
-            }
 
-            .hotel-listing {
-                padding: 0px;
-                margin-bottom: 10px;
-            }
-
-            .hotel-info h3 {
-                font-size: 0.8rem;
-            }
-
-            .hotel-info p {
-                font-size: 0.8rem;
-                margin-bottom: 0;
-            }
-
-            .hotel-info label {
-                font-size: 0.8rem;
-            }
-
-            .hotel-info select {
-                font-size: 0.8rem;
-                padding: 5px;
-            }
-
-            .btn-custom {
-                font-size: 0.8rem;
-                padding: 5px;
-            }
-
-            .hotel-icon i {
-                font-size: 1rem;
-            }
-
-            .tent-number {
-                font-size: 0.8rem;
-            }
-
-            .tent-box {
-                margin-top: 5px;
-            }
-
-            .hotel-icon-container {
-                margin-bottom: 5px;
-            }
-
-            .hotel-icon {
-                gap: 5px;
-            }
-
-            .hotel-image {
-                width: 150px;
-                height: auto;
-            }
-
-            .logo-container {
-                padding-left: 10px;
-                padding-top: 10px;
-            }
-
-            .navbar {
-                padding: 5px;
-            }
-
-            .nav-links a {
-                font-size: 1rem;
-            }
-
-            .gallery,
-            .review {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            footer {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-
-            footer nav {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .news-item img {
-                width: 300px;
-                height: 250px;
-                border-radius: 10px;
-            }
-
+    @media (max-width: 768px) {
+        .hero {
+            height: 25vh !important;
         }
 
-        .fa-arrow-left {
-            color: white;
+        .hotel-info {
+            padding: 10px;
         }
+
+        .hotel-listing {
+            padding: 0px;
+            margin-bottom: 10px;
+        }
+
+        .hotel-info h3 {
+            font-size: 0.8rem;
+        }
+
+        .hotel-info p {
+            font-size: 0.8rem;
+            margin-bottom: 0;
+        }
+
+        .hotel-info label {
+            font-size: 0.8rem;
+        }
+
+        .hotel-info select {
+            font-size: 0.8rem;
+            padding: 5px;
+        }
+
+        .btn-custom {
+            font-size: 0.8rem;
+            padding: 5px;
+        }
+
+        .hotel-icon i {
+            font-size: 1rem;
+        }
+
+        .tent-number {
+            font-size: 0.8rem;
+        }
+
+        .tent-box {
+            margin-top: 5px;
+        }
+
+        .hotel-icon-container {
+            margin-bottom: 5px;
+        }
+
+        .hotel-icon {
+            gap: 5px;
+        }
+
+        .hotel-image {
+            width: 150px;
+            height: auto;
+        }
+
+        .logo-container {
+            padding-left: 10px;
+            padding-top: 10px;
+        }
+
+        .navbar {
+            padding: 5px;
+        }
+
+        .nav-links a {
+            font-size: 1rem;
+        }
+
+        .gallery,
+        .review {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        footer {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        footer nav {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .news-item img {
+            width: 300px;
+            height: 250px;
+            border-radius: 10px;
+        }
+
+    }
+
+    .fa-arrow-left {
+        color: white;
+    }
+
+    .hero {
+        position: relative;
+        text-align: center;
+        color: white;
+        background: url('bg/service.png') center/cover no-repeat;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 80px;
+        margin-top: 6rem;
+    }
     </style>
 </head>
 
@@ -540,6 +559,8 @@ if (!isset($_SESSION['user_id'])) {
             <?php endif; ?>
         </ul>
     </nav>
+
+    <header class="hero"></header>
 
     <div class="container">
         <div class="booking-container">

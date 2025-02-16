@@ -310,6 +310,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .logo-container i {
             margin-bottom: 10px !important;
         }
+
         .text-input {
             margin-top: 10px !important;
         }
@@ -332,9 +333,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    @media (max-width: 768px) {
+        .navbar {
+            padding: 5px;
+        }
+        .nav-links a {
+            font-size: 1rem;
+        }
+    }
+
     @media (max-width: 1152px) {
         .logo-container {
-            padding-left: 10px;
+            padding-left: 5px;
             padding-top: 10px;
         }
 
@@ -342,9 +352,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             padding: 5px;
         }
 
-        .nav-links a {
-            font-size: 1rem;
-        }
 
         .contact-section {
             flex-direction: column;
