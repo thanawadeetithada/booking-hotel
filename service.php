@@ -826,8 +826,11 @@ if (!isset($_SESSION['user_id'])) {
                         dataType: "json",
                         success: function(response) {
                             if (response.status === "success") {
-                                window.location.href =
+                                let confirmBooking = confirm("คุณต้องการจองห้องพักใช่ไหม?");
+                                if (confirmBooking) {
+                                    window.location.href =
                                     `payment.php?booking_id=${response.booking_id}`;
+                                }
                             } else {
                                 console.error("Booking Error:", response);
                                 alert("เกิดข้อผิดพลาดในการจอง: " + response.message);
@@ -883,8 +886,6 @@ if (!isset($_SESSION['user_id'])) {
                         payment_method: paymentMethod
                     };
 
-                    console.log("Data being sent to insert_booking.php:", data);
-
                     $.ajax({
                         url: "insert_booking.php",
                         method: "POST",
@@ -892,8 +893,11 @@ if (!isset($_SESSION['user_id'])) {
                         dataType: "json",
                         success: function(response) {
                             if (response.status === "success") {
-                                window.location.href =
+                                let confirmBooking = confirm("คุณต้องการจองเต็นท์ใช่ไหม?");
+                                if (confirmBooking) {
+                                    window.location.href =
                                     `payment.php?booking_id=${response.booking_id}`;
+                                }
                             } else {
                                 alert("เกิดข้อผิดพลาดในการจอง: " + response.message);
                             }

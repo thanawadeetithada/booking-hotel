@@ -177,7 +177,7 @@ $result = $conn->query($sql);
         <div class="offcanvas-body">
             <ul class="list-unstyled">
                 <li><a href="admin_dashboard.php" class="text-white text-decoration-none d-block py-2"><i
-                            class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                            class="fa-solid fa-chart-line"></i> หน้าหลัก</a></li>
                 <li><a href="add_room.php" class="text-white text-decoration-none d-block py-2"><i
                             class="fa-regular fa-money-bill-1"></i> ตั้งค่าราคาห้องพัก</a></li>
                 <li><a href="dashboard_room.php" class="text-white text-decoration-none d-block py-2"><i

@@ -64,6 +64,7 @@ ob_end_flush();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เข้าสู่ระบบ</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
     body {
         font-family: 'Prompt', sans-serif;
@@ -81,7 +82,7 @@ ob_end_flush();
         border-radius: 15px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         width: 100%;
-        max-width: 400px;
+        max-width: 500px;
         text-align: center;
         margin: 30px;
     }
@@ -118,7 +119,7 @@ ob_end_flush();
     }
 
     input {
-        width: calc(100% - 20px);
+        width: 100%;
         padding: 12px;
         margin: 5px 0;
         border: 1px solid #ccc;
@@ -151,6 +152,30 @@ ob_end_flush();
     a:hover {
         text-decoration: underline;
     }
+
+    .forgot-password {
+        display: flex;
+        justify-content: center;
+    }
+
+    .forgot-password button {
+        width: 30%;
+        margin: 5px;
+    }
+
+    .form-group {
+        display: flex;
+        justify-content: center;
+    }
+
+    .form-control {
+        width: 80%;
+    }
+
+    form a {
+        color:black;
+        text-align: right;
+    }
     </style>
 </head>
 
@@ -169,11 +194,37 @@ ob_end_flush();
 
             <label for="password">รหัสผ่าน</label>
             <input type="password" id="password" name="password" placeholder="กรอกรหัสผ่าน" required>
-
+            <a href="#" id="forgotPasswordLink" data-toggle="modal"
+            data-target="#forgotPasswordModal">ลืมรหัสผ่าน?</a>
             <button type="submit">เข้าสู่ระบบ</button>
         </form>
+        
         <a href="register.php">สมัครสมาชิก</a>
     </div>
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content modal">
+                <div class="modal-header align-items-center">
+                    <h5 class="modal-title mx-auto">ลืมรหัสผ่าน</h5>
+                </div>
+                <div class="modal-body px-4 ">
+                    <form id="forgotPasswordForm" method="POST" action="process_forgot_password.php">
+                        <div class="form-group">
+                            <input type="email" name="email" class="form-control rounded-pill"
+                                placeholder="กรุณาใส่อีเมล" required>
+                        </div>
+                        <div class="forgot-password">
+                            <button type="submit" class="btn btn-primary rounded-pill">ตกลง</button>
+                            <button type="button" class="btn btn-outline-secondary rounded-pill"
+                                data-dismiss="modal">ยกเลิก</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>
